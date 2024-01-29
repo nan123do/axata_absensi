@@ -37,6 +37,8 @@ class LoginService {
           PegawaiData.namajabatan = data[0]['namajabatan'] ?? '';
           PegawaiData.menuakses = data[0]['menuakses'] ?? '';
           GlobalData.namatoko = data[0]['namatoko'] ?? GlobalData.namatoko;
+          GlobalData.alamattoko =
+              data[0]['alamattoko'] ?? GlobalData.alamattoko;
           return true;
         }
       } else {

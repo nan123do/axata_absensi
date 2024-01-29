@@ -2,6 +2,7 @@ import 'package:axata_absensi/components/custom_toast.dart';
 import 'package:axata_absensi/services/helper_service.dart';
 import 'package:axata_absensi/services/login_service.dart';
 import 'package:axata_absensi/routes/app_pages.dart';
+import 'package:axata_absensi/utils/connectivity_checker.dart';
 import 'package:axata_absensi/utils/global_data.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -62,36 +63,41 @@ class LoginController extends GetxController {
   }
 
   Future<void> login() async {
-    if (usernameC.text.isNotEmpty && passC.text.isNotEmpty) {
-      isLoading.value = true;
-      try {
-        final box = GetStorage();
-        box.write('username', usernameC.text);
-        box.write('password', passC.text);
-        box.write('savecredential', saveCredential.value);
-        box.write('islogin', true);
-        GlobalData.username = usernameC.text;
-        GlobalData.password = passC.text;
+    if (await ConnectivityChecker.checkConnection()) {
+      if (usernameC.text.isNotEmpty && passC.text.isNotEmpty) {
+        isLoading.value = true;
+        try {
+          final box = GetStorage();
+          box.write('username', usernameC.text);
+          box.write('password', passC.text);
+          box.write('savecredential', saveCredential.value);
+          box.write('islogin', true);
+          GlobalData.username = usernameC.text;
+          GlobalData.password = passC.text;
 
-        bool hasil = await serviceLogin.login();
+          bool hasil = await serviceLogin.login();
 
-        if (hasil) {
-          String kodeSetting = serviceHelper.getKodeSetting('GajiPermenit');
-          GlobalData.gajiPermenit =
-              await serviceHelper.doubleSetting(kodeSetting: kodeSetting);
+          if (hasil) {
+            String kodeSetting = serviceHelper.getKodeSetting('GajiPermenit');
+            GlobalData.gajiPermenit =
+                await serviceHelper.doubleSetting(kodeSetting: kodeSetting);
 
-          CustomToast.successToast("Success", "Berhasil Login");
-          await Future.delayed(Duration.zero);
+            CustomToast.successToast("Success", "Berhasil Login");
+            await Future.delayed(Duration.zero);
 
-          Get.offAllNamed(Routes.HOME);
+            Get.offAllNamed(Routes.HOME);
+          }
+        } catch (e) {
+          CustomToast.errorToast(
+              "Error", "Terjadi Kesalahan : ${e.toString()}");
+        } finally {
+          isLoading.value = false;
         }
-      } catch (e) {
-        CustomToast.errorToast("Error", "Terjadi Kesalahan : ${e.toString()}");
-      } finally {
-        isLoading.value = false;
+      } else {
+        CustomToast.errorToast("Error", "Username dan password harus diisi");
       }
     } else {
-      CustomToast.errorToast("Error", "Username dan password harus diisi");
+      CustomToast.errorToast("Error", "Aktifkan data seluler atau wifi");
     }
   }
 }

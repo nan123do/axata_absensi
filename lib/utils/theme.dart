@@ -17,6 +17,7 @@ class AxataTheme {
   static Color grey = Color(0xff3E3E3E);
   static Color red = Color(0xffFF0202);
   static Color green = Color(0xff36BB43);
+  static Color yellow = Color(0xffFEF529);
 
   static TextStyle oneBold = GoogleFonts.poppins(
     fontSize: 36.sp,
@@ -78,11 +79,45 @@ class AxataTheme {
     ],
   );
 
+  static ShapeDecoration styleRedGradient = ShapeDecoration(
+    gradient: const LinearGradient(
+      begin: Alignment.centerLeft,
+      end: Alignment.centerRight,
+      colors: [Color(0xFFFF0202), Color(0xFFFE6929), Color(0xFFFE6929)],
+    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+    shadows: const [
+      BoxShadow(
+        color: Color(0x3F000000),
+        blurRadius: 2,
+        offset: Offset(0, 0),
+        spreadRadius: 0,
+      )
+    ],
+  );
+
   static ShapeDecoration styleGradientUD = ShapeDecoration(
     gradient: const LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
       colors: [Color(0xFF0276FF), Color(0xFF11A9FD), Color(0xFF11A9FD)],
+    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+    shadows: const [
+      BoxShadow(
+        color: Color(0x3F000000),
+        blurRadius: 2,
+        offset: Offset(0, 0),
+        spreadRadius: 0,
+      )
+    ],
+  );
+
+  static ShapeDecoration styleRedGradientUD = ShapeDecoration(
+    gradient: const LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [Color(0xFFFF0202), Color(0xFFFE6929), Color(0xFFFE6929)],
     ),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
     shadows: const [

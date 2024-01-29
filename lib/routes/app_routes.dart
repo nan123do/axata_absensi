@@ -11,6 +11,7 @@ abstract class Routes {
   static const IDCLOUD = _Paths.IDCLOUD;
   static const PROFILE = _Paths.PROFILE;
   static const CHECKIN = _Paths.CHECKIN;
+  static const SMILEFACE = _Paths.SMILEFACE;
 }
 
 abstract class _Paths {
@@ -20,4 +21,5 @@ abstract class _Paths {
   static const IDCLOUD = '/idcloud';
   static const PROFILE = '/profile';
   static const CHECKIN = '/checkin';
+  static const SMILEFACE = '/smileface';
 }

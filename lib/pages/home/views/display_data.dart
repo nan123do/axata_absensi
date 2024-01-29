@@ -16,17 +16,27 @@ class DisplayDataCheckInOut extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color getColorCheckin() {
-      return controller.isTimeBeforeJadwalCheckIn(
-        DateFormat('HH:mm').format(data.jamMasuk),
-      )
-          ? AxataTheme.green
-          : AxataTheme.red;
+    String getJadwalAbsen(
+      String filter,
+    ) {
+      String hasil = '-';
+      if (data.jamKerja != '') {
+        List<String> jadwal = data.jamKerja.split('-');
+        if (filter == 'checkin') {
+          hasil = jadwal[0];
+        } else {
+          hasil = jadwal[1];
+        }
+      }
+      return hasil;
     }
 
-    Color getColorCheckOut() {
-      return controller.isTimeAfterJadwalCheckOut(
-              DateFormat('HH:mm').format(data.jamKeluar))
+    Color getColorCheckin() {
+      String jadwal = getJadwalAbsen('checkin');
+      return controller.isTimeBeforeJadwalCheckIn(
+        DateFormat('HH:mm').format(data.jamMasuk),
+        jadwal,
+      )
           ? AxataTheme.green
           : AxataTheme.red;
     }
@@ -65,9 +75,41 @@ class DisplayDataCheckInOut extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      Text(
-                        'Jam Absen',
-                        style: AxataTheme.oneSmall,
+                      SizedBox(
+                        width: 190.w,
+                        child: Text(
+                          'Jadwal',
+                          style: AxataTheme.oneSmall,
+                        ),
+                      ),
+                      SizedBox(width: 18.w),
+                      Container(
+                        width: 170.h,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.symmetric(horizontal: 33.w),
+                        decoration: AxataTheme.styleUnselectBoxFilter,
+                        child: FittedBox(
+                          child: Text(
+                            getJadwalAbsen('checkin'),
+                            style: AxataTheme.oneSmall.copyWith(
+                              color: getColorCheckin(),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 24.h,
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 190.w,
+                        child: Text(
+                          'Jam Absen',
+                          style: AxataTheme.oneSmall,
+                        ),
                       ),
                       SizedBox(width: 18.w),
                       Container(
@@ -107,8 +149,37 @@ class DisplayDataCheckInOut extends StatelessWidget {
                   Text(
                     'CHECK-OUT',
                     style: AxataTheme.oneBold.copyWith(
-                      color: getColorCheckOut(),
+                      color: AxataTheme.mainColor,
                     ),
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 190.w,
+                        child: Text(
+                          'Jadwal',
+                          style: AxataTheme.oneSmall,
+                        ),
+                      ),
+                      SizedBox(width: 18.w),
+                      Container(
+                        width: 170.h,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.symmetric(horizontal: 33.w),
+                        decoration: AxataTheme.styleUnselectBoxFilter,
+                        child: FittedBox(
+                          child: Text(
+                            getJadwalAbsen('checkout'),
+                            style: AxataTheme.oneSmall.copyWith(
+                              color: AxataTheme.mainColor,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 24.h,
                   ),
                   Row(
                     children: [
@@ -126,7 +197,7 @@ class DisplayDataCheckInOut extends StatelessWidget {
                           child: Text(
                             getJamKeluar(),
                             style: AxataTheme.oneSmall.copyWith(
-                              color: getColorCheckOut(),
+                              color: AxataTheme.mainColor,
                             ),
                           ),
                         ),

@@ -15,6 +15,7 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       bottomNavigationBar: const CustomNavBarView(),
       backgroundColor: AxataTheme.bgGrey,
       body: SafeArea(
@@ -71,6 +72,57 @@ class HomeView extends GetView<HomeController> {
                     style: AxataTheme.fiveMiddle,
                   ),
                   SizedBox(height: 24.h),
+                  Obx(
+                    () => controller.statusShift.value == '1'
+                        ? Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 200.w,
+                              vertical: 24.h,
+                            ),
+                            decoration: AxataTheme.styleUnselectBoxFilter,
+                            alignment: Alignment.center,
+                            child: Obx(
+                              () => controller.isEmptySelectedShift.value &&
+                                      controller.selectedShift == null
+                                  ? GestureDetector(
+                                      onTap: () => controller.pilihShift(),
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 30.w,
+                                          vertical: 12.h,
+                                        ),
+                                        decoration: AxataTheme.styleGradientUD,
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          'Pilih shift kamu hari ini',
+                                          style: AxataTheme.oneBold.copyWith(
+                                            color: AxataTheme.white,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : controller.doneCheckIn.value == ''
+                                      ? GestureDetector(
+                                          onTap: () => controller.pilihShift(),
+                                          child: Text(
+                                            controller.selectedShift!.nama,
+                                            style: AxataTheme.oneBold,
+                                          ),
+                                        )
+                                      : Text(
+                                          controller.selectedShift!.nama,
+                                          style: AxataTheme.oneBold,
+                                        ),
+                            ),
+                          )
+                        : Container(),
+                  ),
+                  Obx(
+                    () => controller.statusShift.value == '1'
+                        ? SizedBox(height: 24.h)
+                        : Container(),
+                  ),
                   CheckInOutContainer(
                     onTap: () => controller.checkIn(),
                     controller: controller,
@@ -102,50 +154,57 @@ class HomeView extends GetView<HomeController> {
                     style: AxataTheme.fiveMiddle,
                   ),
                   SizedBox(height: 24.h),
-                  Container(
-                    height: 0.43.sh,
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 30.w,
-                      vertical: 36.h,
-                    ),
-                    decoration: AxataTheme.styleUnselectBoxFilter,
-                    child: Obx(
-                      () => controller.isLoading.value
-                          ? const SmallLoadingPage()
-                          : Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: controller.listAbsen.isEmpty
-                                      ? Center(
-                                          child: Text(
-                                            "Data Kosong..",
-                                            style: AxataTheme.oneSmall,
+                  Obx(
+                    () => Container(
+                      height: controller.statusShift.value == '0'
+                          ? 0.43.sh
+                          : 0.36.sh,
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 30.w,
+                        vertical: 36.h,
+                      ),
+                      decoration: AxataTheme.styleUnselectBoxFilter,
+                      child: Obx(
+                        () => controller.isLoading.value
+                            ? const SmallLoadingPage()
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: controller.listAbsen.isEmpty
+                                        ? Center(
+                                            child: Text(
+                                              "Data Kosong..",
+                                              style: AxataTheme.oneSmall,
+                                            ),
+                                          )
+                                        : ListView.builder(
+                                            itemCount:
+                                                controller.listAbsen.length,
+                                            itemBuilder: (context, index) {
+                                              return DisplayDataCheckInOut(
+                                                controller: controller,
+                                                data:
+                                                    controller.listAbsen[index],
+                                              );
+                                            },
                                           ),
-                                        )
-                                      : ListView.builder(
-                                          itemCount:
-                                              controller.listAbsen.length,
-                                          itemBuilder: (context, index) {
-                                            return DisplayDataCheckInOut(
-                                              controller: controller,
-                                              data: controller.listAbsen[index],
-                                            );
-                                          },
-                                        ),
-                                ),
-                                SizedBox(height: 36.h),
-                                Text(
-                                  'Total masuk bulan ini : 2 hari',
-                                  style: AxataTheme.threeSmall,
-                                ),
-                                Text(
-                                  'Telat : 2 hari',
-                                  style: AxataTheme.threeSmall,
-                                ),
-                              ],
-                            ),
+                                  ),
+                                  SizedBox(height: 36.h),
+                                  Text(
+                                    'Total masuk bulan ini : ${controller.hariMasuk} hari',
+                                    style: AxataTheme.threeSmall,
+                                  ),
+                                  Obx(
+                                    () => Text(
+                                      'Telat : ${controller.telat.value} kali',
+                                      style: AxataTheme.threeSmall,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
                     ),
                   ),
                 ],

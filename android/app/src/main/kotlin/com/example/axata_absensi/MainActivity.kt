@@ -1,4 +1,4 @@
-package com.example.axata_absensi
+package com.axata.absensi
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

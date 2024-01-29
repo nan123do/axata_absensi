@@ -20,69 +20,61 @@ class CheckInOutContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Container beforeTimeCheck() {
-      return Container(
-        height: 100.h,
-        width: 100.w,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AxataTheme.white,
-          border: Border.all(
-            color: AxataTheme.grey,
-            width: 1,
-          ),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          '--',
-          style: AxataTheme.oneSmall,
-        ),
+    Widget beforeTimeCheck() {
+      return FaIcon(
+        FontAwesomeIcons.solidCheckCircle,
+        color: AxataTheme.green,
       );
     }
 
     Widget handleCheck() {
-      bool isTime = isCheckIn
-          ? controller.isTimeCheckIn.value
-          : controller.isTimeCheckOut.value;
-      if (isTime) {
-        return GestureDetector(
-          onTap: onTap,
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 30.w,
-              vertical: 12.h,
-            ),
-            decoration: isCheckIn
-                ? AxataTheme.styleGradientUD
-                : ShapeDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        AxataTheme.red,
-                        const Color(0xFFFE6929),
-                        const Color(0xFFFE6929)
+      if (timeCheck.value == '') {
+        if (controller.isLoadingCheckIn.value) {
+          return SizedBox(
+            width: 70.h,
+            height: 70.h,
+            child: const CircularProgressIndicator(),
+          );
+        } else {
+          return GestureDetector(
+            onTap: onTap,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 30.w,
+                vertical: 12.h,
+              ),
+              decoration: isCheckIn
+                  ? AxataTheme.styleGradientUD
+                  : ShapeDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AxataTheme.red,
+                          const Color(0xFFFE6929),
+                          const Color(0xFFFE6929)
+                        ],
+                      ),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4)),
+                      shadows: const [
+                        BoxShadow(
+                          color: Color(0x3F000000),
+                          blurRadius: 2,
+                          offset: Offset(0, 0),
+                          spreadRadius: 0,
+                        )
                       ],
                     ),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4)),
-                    shadows: const [
-                      BoxShadow(
-                        color: Color(0x3F000000),
-                        blurRadius: 2,
-                        offset: Offset(0, 0),
-                        spreadRadius: 0,
-                      )
-                    ],
-                  ),
-            child: Text(
-              isCheckIn ? 'Check-In' : 'Check-Out',
-              style: AxataTheme.oneBold.copyWith(
-                color: AxataTheme.white,
+              child: Text(
+                isCheckIn ? 'Check-In' : 'Check-Out',
+                style: AxataTheme.oneBold.copyWith(
+                  color: AxataTheme.white,
+                ),
               ),
             ),
-          ),
-        );
+          );
+        }
       } else {
         return beforeTimeCheck();
       }
@@ -170,7 +162,7 @@ class CheckInOutContainer extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(width: 36.w),
+                    SizedBox(width: 24.w),
                     Text(
                       'WIB',
                       style: AxataTheme.oneSmall,

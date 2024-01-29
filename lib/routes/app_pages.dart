@@ -10,6 +10,8 @@ import 'package:axata_absensi/pages/login/bindings/login_binding.dart';
 import 'package:axata_absensi/pages/login/views/login_view.dart';
 import 'package:axata_absensi/pages/profile/bindings/profile_binding.dart';
 import 'package:axata_absensi/pages/profile/views/profile_view.dart';
+import 'package:axata_absensi/pages/smileface/bindings/smileface_binding.dart';
+import 'package:axata_absensi/pages/smileface/views/smileface_view.dart';
 import 'package:axata_absensi/pages/splash/bindings/splash_binding.dart';
 import 'package:axata_absensi/pages/splash/views/splash_view.dart';
 import 'package:get/get.dart';
@@ -51,6 +53,11 @@ class AppPages {
       name: _Paths.CHECKIN,
       page: () => CheckInView(),
       binding: CheckInBinding(),
+    ),
+    GetPage(
+      name: _Paths.SMILEFACE,
+      page: () => SmileFaceView(),
+      binding: SmileFaceBinding(),
     ),
   ];
 }

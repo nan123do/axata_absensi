@@ -9,6 +9,8 @@ class DataAbsenModel {
   late String keterangan;
   late String kodePegawai;
   late String status;
+  late String idShift;
+  late String jamKerja;
 
   DataAbsenModel({
     required this.id,
@@ -21,6 +23,8 @@ class DataAbsenModel {
     required this.keterangan,
     required this.kodePegawai,
     required this.status,
+    required this.idShift,
+    required this.jamKerja,
   });
 
   DataAbsenModel.fromJson(Map<String, dynamic> json) {
@@ -34,6 +38,8 @@ class DataAbsenModel {
     keterangan = json['keterangan'];
     kodePegawai = json['kodePegawai'];
     status = json['status'];
+    idShift = json['idShift'];
+    jamKerja = json['jamKerja'];
   }
 
   Map<String, dynamic> toJson() {
@@ -48,6 +54,8 @@ class DataAbsenModel {
       'keterangan': keterangan,
       'kodePegawai': kodePegawai,
       'status': status,
+      'idShift': idShift,
+      'jamKerja': jamKerja,
     };
   }
 }

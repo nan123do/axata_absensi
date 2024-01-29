@@ -497,6 +497,9 @@ class HelperService {
       case "IDCloud":
         xValue = "I01";
         break;
+      case "StatusShift":
+        xValue = "I02";
+        break;
       default:
         xValue = "";
         break;
