@@ -66,7 +66,7 @@ class CheckInView extends GetView<CheckInController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Lokasi Check-In',
+                          'Lokasi Absen Masuk',
                           style: AxataTheme.twoBold,
                         ),
                         SizedBox(height: 15.h),
@@ -158,18 +158,20 @@ class CheckInView extends GetView<CheckInController> {
                           ],
                         ),
                         SizedBox(height: 40.h),
-                        GestureDetector(
-                          onTap: () => controller.goFaceSmiling(),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 360.w,
-                              vertical: 30.h,
-                            ),
-                            decoration: AxataTheme.styleGradientUD,
-                            child: Text(
-                              'Check-In',
-                              style: AxataTheme.fiveMiddle.copyWith(
-                                color: AxataTheme.white,
+                        Center(
+                          child: GestureDetector(
+                            onTap: () => controller.goFaceSmiling(),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 300.w,
+                                vertical: 30.h,
+                              ),
+                              decoration: AxataTheme.styleGradientUD,
+                              child: Text(
+                                'Absen Masuk',
+                                style: AxataTheme.fiveMiddle.copyWith(
+                                  color: AxataTheme.white,
+                                ),
                               ),
                             ),
                           ),

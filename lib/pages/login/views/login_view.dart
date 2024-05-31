@@ -43,11 +43,36 @@ class LoginView extends GetView<LoginController> {
                       color: AxataTheme.mainColor,
                     ),
                   ),
-                  child: Center(
-                    child: Text(
-                      controller.textIdCloud.value,
-                      style: AxataTheme.oneSmall,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        controller.textIdCloud.value,
+                        style: AxataTheme.oneSmall,
+                      ),
+                      SizedBox(width: 12.w),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12.w,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AxataTheme.white,
+                          border: Border.all(
+                            color: AxataTheme.mainColor,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          controller.textKoneksi.value,
+                          style: AxataTheme.sevenSmall,
+                        ),
+                      ),
+                      SizedBox(width: 12.w),
+                      Text(
+                        '| ${controller.textKeterangan.value}',
+                        style: AxataTheme.oneSmall,
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -182,6 +207,7 @@ class LoginView extends GetView<LoginController> {
     }
 
     return Scaffold(
+      // resizeToAvoidBottomInset: false,
       backgroundColor: AxataTheme.white,
       body: Stack(
         alignment: Alignment.center,

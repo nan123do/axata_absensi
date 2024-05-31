@@ -67,7 +67,7 @@ class CheckInOutContainer extends StatelessWidget {
                       ],
                     ),
               child: Text(
-                isCheckIn ? 'Check-In' : 'Check-Out',
+                isCheckIn ? 'Masuk' : 'Keluar',
                 style: AxataTheme.oneBold.copyWith(
                   color: AxataTheme.white,
                 ),
@@ -96,7 +96,7 @@ class CheckInOutContainer extends StatelessWidget {
             ),
             SizedBox(width: 36.w),
             SizedBox(
-              width: 100.w,
+              width: 120.w,
               child: Text(
                 timeCheck.value,
                 style: AxataTheme.oneBold,
@@ -133,7 +133,7 @@ class CheckInOutContainer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isCheckIn ? 'CHECK-IN' : 'CHECK-OUT',
+                  isCheckIn ? 'ABSEN MASUK' : 'ABSEN KELUAR',
                   style: AxataTheme.oneBold,
                 ),
                 Row(
@@ -153,7 +153,7 @@ class CheckInOutContainer extends StatelessWidget {
                     SizedBox(width: 36.w),
                     Obx(
                       () => SizedBox(
-                        width: 100.w,
+                        width: 120.w,
                         child: Text(
                           isCheckIn
                               ? controller.jadwalCheckIn.value
@@ -162,7 +162,7 @@ class CheckInOutContainer extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(width: 24.w),
+                    SizedBox(width: 36.w),
                     Text(
                       'WIB',
                       style: AxataTheme.oneSmall,

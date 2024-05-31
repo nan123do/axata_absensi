@@ -1,3 +1,32 @@
+class PaginatedAbsensi {
+  List<DataAbsenModel> results;
+  int count;
+  int telat;
+  String? next;
+  String? previous;
+
+  PaginatedAbsensi({
+    required this.results,
+    required this.count,
+    required this.telat,
+    this.next,
+    this.previous,
+  });
+
+  factory PaginatedAbsensi.fromOnlineJson(Map<String, dynamic> json) {
+    var list = json['results'] as List;
+    List<DataAbsenModel> resultsList =
+        list.map((item) => DataAbsenModel.fromOnlineJson(item)).toList();
+    return PaginatedAbsensi(
+      results: resultsList,
+      telat: json['telat'],
+      count: json['count'],
+      next: json['next'],
+      previous: json['previous'],
+    );
+  }
+}
+
 class DataAbsenModel {
   late String id;
   late String nama;
@@ -10,6 +39,7 @@ class DataAbsenModel {
   late String kodePegawai;
   late String status;
   late String idShift;
+  late String namaShift;
   late String jamKerja;
 
   DataAbsenModel({
@@ -24,6 +54,7 @@ class DataAbsenModel {
     required this.kodePegawai,
     required this.status,
     required this.idShift,
+    required this.namaShift,
     required this.jamKerja,
   });
 
@@ -39,7 +70,31 @@ class DataAbsenModel {
     kodePegawai = json['kodePegawai'];
     status = json['status'];
     idShift = json['idShift'];
+    namaShift = json['namaShift'] ?? '';
     jamKerja = json['jamKerja'];
+  }
+
+  DataAbsenModel.fromOnlineJson(Map<String, dynamic> json) {
+    Map<String, dynamic> user = json['user'];
+    Map<String, dynamic> shift = json['shift'];
+
+    id = json['id'].toString();
+    nama = user['first_name'];
+    jamMasuk = DateTime.parse(json['jam_masuk'].toString()).add(
+      const Duration(hours: 7),
+    );
+    jamKeluar = DateTime.parse(json['jam_keluar'].toString()).add(
+      const Duration(hours: 7),
+    );
+    jmlMenit = jamKeluar.difference(jamMasuk).inMinutes.toDouble();
+    tarif = json['tarif'] == null ? 0 : double.parse(json['tarif']);
+    gajiAbsen = json['tarif'] == null ? 0 : tarif * jmlMenit;
+    keterangan = json['keterangan'];
+    kodePegawai = user['username'];
+    status = json['status'].toString();
+    idShift = shift['id'].toString();
+    namaShift = shift['nama'] ?? '';
+    jamKerja = json['jam_kerja'];
   }
 
   Map<String, dynamic> toJson() {
@@ -55,6 +110,7 @@ class DataAbsenModel {
       'kodePegawai': kodePegawai,
       'status': status,
       'idShift': idShift,
+      'namaShift': namaShift,
       'jamKerja': jamKerja,
     };
   }

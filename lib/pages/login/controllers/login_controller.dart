@@ -2,8 +2,12 @@ import 'package:axata_absensi/components/custom_toast.dart';
 import 'package:axata_absensi/services/helper_service.dart';
 import 'package:axata_absensi/services/login_service.dart';
 import 'package:axata_absensi/routes/app_pages.dart';
+import 'package:axata_absensi/services/online/online_login_service.dart';
+import 'package:axata_absensi/services/setting_service.dart';
 import 'package:axata_absensi/utils/connectivity_checker.dart';
+import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
+import 'package:axata_absensi/utils/koneksi_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -15,10 +19,13 @@ class LoginController extends GetxController {
   RxBool saveCredential = false.obs;
   RxBool isLogin = false.obs;
   RxString textIdCloud = ''.obs;
+  RxString textKoneksi = ''.obs;
+  RxString textKeterangan = ''.obs;
   TextEditingController usernameC = TextEditingController();
   TextEditingController passC = TextEditingController();
   LoginService serviceLogin = LoginService();
   HelperService serviceHelper = HelperService();
+  SettingService settingHelper = SettingService();
 
   @override
   void onInit() {
@@ -27,8 +34,10 @@ class LoginController extends GetxController {
     getInit();
   }
 
-  getInit() {
+  getInit() async {
     textIdCloud = getJudulIdCloud().obs;
+    textKoneksi.value = KoneksiHelper.getStrKoneksi(GlobalData.globalKoneksi);
+    textKeterangan.value = GlobalData.keterangan.toUpperCase();
 
     // Get Biometric Auth
     usernameC.text = GlobalData.username;
@@ -55,11 +64,19 @@ class LoginController extends GetxController {
 
   String getJudulIdCloud() {
     String idcloud = GlobalData.idcloud;
-    String namatoko = GlobalData.keterangan.toUpperCase();
 
-    String formattedId =
-        '${idcloud.substring(0, 3)}-${idcloud.substring(3, 6)}-${idcloud.substring(6)}';
-    return '$formattedId | $namatoko';
+    String formattedId = '';
+    switch (GlobalData.globalKoneksi) {
+      case Koneksi.online:
+        formattedId = idcloud;
+        break;
+      case Koneksi.axatapos:
+        formattedId =
+            '${idcloud.substring(0, 3)}-${idcloud.substring(3, 6)}-${idcloud.substring(6)}';
+        break;
+      default:
+    }
+    return formattedId;
   }
 
   Future<void> login() async {
@@ -75,16 +92,8 @@ class LoginController extends GetxController {
           GlobalData.username = usernameC.text;
           GlobalData.password = passC.text;
 
-          bool hasil = await serviceLogin.login();
-
+          bool hasil = await handleLogin(GlobalData.globalKoneksi);
           if (hasil) {
-            String kodeSetting = serviceHelper.getKodeSetting('GajiPermenit');
-            GlobalData.gajiPermenit =
-                await serviceHelper.doubleSetting(kodeSetting: kodeSetting);
-
-            CustomToast.successToast("Success", "Berhasil Login");
-            await Future.delayed(Duration.zero);
-
             Get.offAllNamed(Routes.HOME);
           }
         } catch (e) {
@@ -98,6 +107,28 @@ class LoginController extends GetxController {
       }
     } else {
       CustomToast.errorToast("Error", "Aktifkan data seluler atau wifi");
+    }
+  }
+
+  Future<bool> handleLogin(Koneksi koneksi) async {
+    switch (koneksi) {
+      case Koneksi.online:
+        OnlineLoginService serviceOnline = OnlineLoginService();
+        bool hasil = await serviceOnline.login();
+
+        return hasil;
+      case Koneksi.axatapos:
+        bool hasil = await serviceLogin.login();
+
+        if (hasil) {
+          String kodeSetting = serviceHelper.getKodeSetting('GajiPermenit');
+          GlobalData.gajiPermenit =
+              await serviceHelper.doubleSetting(kodeSetting: kodeSetting);
+          await settingHelper.getDataSetting();
+        }
+        return hasil;
+      default:
+        return false;
     }
   }
 }

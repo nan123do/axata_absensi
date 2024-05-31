@@ -6,16 +6,22 @@ import 'package:axata_absensi/models/Shift/datashift_model.dart';
 import 'package:axata_absensi/pages/home/controllers/home_controller.dart';
 import 'package:axata_absensi/routes/app_pages.dart';
 import 'package:axata_absensi/services/absensi_service.dart';
+import 'package:axata_absensi/services/online/online_absensi_service.dart';
 import 'package:axata_absensi/utils/datehelper.dart';
+import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
-import 'package:axata_absensi/utils/pegawai_data.dart';
+import 'package:axata_absensi/utils/locationhelper.dart';
 import 'package:axata_absensi/utils/theme.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class CheckInController extends GetxController {
   final homeController = Get.find<HomeController>();
+  TextEditingController keteranganC = TextEditingController();
   RxBool isLoading = false.obs;
   RxBool isLoadingDistance = false.obs;
   RxString officeDistance = "-".obs;
@@ -46,8 +52,9 @@ class CheckInController extends GetxController {
   }
 
   Future<void> getCurrentLocation() async {
-    Map<String, dynamic> data = await _determinePosition();
+    Map<String, dynamic> data = await determinePosition();
     currentPosition = data['position'];
+    update();
   }
 
   Future<void> refreshCurrentLocation() async {
@@ -61,7 +68,7 @@ class CheckInController extends GetxController {
     }
   }
 
-  Future<Map<String, dynamic>> _determinePosition() async {
+  Future<Map<String, dynamic>> determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -108,10 +115,10 @@ class CheckInController extends GetxController {
 
   Future<String> getDistanceToOffice() async {
     String result = '-';
-    Map<String, dynamic> determinePosition = await _determinePosition();
+    Map<String, dynamic> positionDetermine = await determinePosition();
 
-    if (!determinePosition["error"]) {
-      Position position = determinePosition["position"];
+    if (!positionDetermine["error"]) {
+      Position position = positionDetermine["position"];
       double distance = Geolocator.distanceBetween(
         GlobalData.office['latitude'],
         GlobalData.office['longitude'],
@@ -179,7 +186,31 @@ class CheckInController extends GetxController {
     await controller.animateCamera(CameraUpdate.newCameraPosition(goOffice));
   }
 
+  Future<void> goToCurrentPosition() async {
+    final GoogleMapController controller = mapController;
+    CameraPosition goOffice = CameraPosition(
+      target: LatLng(
+        currentPosition.latitude,
+        currentPosition.longitude,
+      ),
+      zoom: 20,
+    );
+    await controller.animateCamera(CameraUpdate.newCameraPosition(goOffice));
+  }
+
   Future<void> goFaceSmiling() async {
+    if (await LocationHelper.isUsingMockLocation()) {
+      CustomToast.errorToast(
+        "Opsi Pengembang Aktif",
+        "Nonaktifkan opsi pengembang dan coba lagi",
+      );
+      return;
+    }
+
+    await getCurrentLocation();
+    await getDistanceToOffice();
+    await goToCurrentPosition();
+
     if (officeDistance.value == 'Didalam Area') {
       Get.toNamed(Routes.SMILEFACE);
     } else {
@@ -192,16 +223,106 @@ class CheckInController extends GetxController {
       DataShiftModel? data = homeController.selectedShift;
       String jadwalMasuk = DateHelper.strHMStoHM(data!.jamMasuk);
       String jadwalKeluar = DateHelper.strHMStoHM(data.jamKeluar);
-      await serviceAbsensi.simpanAbsenMasuk(
-        keterangan: 'Absen masuk ${PegawaiData.nama}',
-        idShift: data.id,
-        jamKerja: '$jadwalMasuk-$jadwalKeluar',
-      );
+      TimeOfDay jadwalIn = DateHelper.stringToTime(jadwalMasuk);
+      bool popup = DateHelper.isTimeBeforeEndTime(jadwalIn, TimeOfDay.now());
+      if (popup) {
+        await Get.defaultDialog(
+          title: "Kamu Terlambat",
+          barrierDismissible: false,
+          titlePadding: EdgeInsets.symmetric(vertical: 25.h),
+          titleStyle: AxataTheme.twoBold,
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FaIcon(
+                FontAwesomeIcons.timesCircle,
+                color: AxataTheme.red,
+                size: 300.r,
+              ),
+              SizedBox(height: 24.h),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 24.h),
+                decoration: BoxDecoration(
+                  color: AxataTheme.bgGrey,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AxataTheme.black),
+                ),
+                child: TextFormField(
+                  controller: keteranganC,
+                  style: AxataTheme.threeSmall,
+                  decoration: InputDecoration.collapsed(
+                    hintText: 'Tulis alasan terlambat disini',
+                    hintStyle: AxataTheme.threeSmall.copyWith(
+                      color: Colors.black45,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          onConfirm: () async {
+            try {
+              await handleAbsenMasuk(
+                data.id,
+                '$jadwalMasuk-$jadwalKeluar',
+                keteranganC.text,
+              );
+              CustomToast.successToast("Success", "Berhasil Absen Masuk");
+              await Future.delayed(Duration.zero);
+              Get.offAllNamed(Routes.HOME);
+            } catch (e) {
+              CustomToast.errorToast('Error', 'Ada error $e');
+            }
+          },
+          textConfirm: "Oke",
+          confirmTextColor: AxataTheme.white,
+          // onCancel: () {
+          //   simpanAbsenMasukAPI(data.id, '$jadwalMasuk-$jadwalKeluar');
+          // },
+          // textCancel: "Batal",
+          onWillPop: () async {
+            // simpanAbsenMasukAPI(data.id, '$jadwalMasuk-$jadwalKeluar');
+            return true;
+          },
+        );
+      } else {
+        simpanAbsenMasukAPI(data.id, '$jadwalMasuk-$jadwalKeluar');
+      }
+    } catch (e) {
+      CustomToast.errorToast("Error", e.toString());
+    }
+  }
+
+  Future<void> simpanAbsenMasukAPI(String id, String jadwal) async {
+    try {
+      await handleAbsenMasuk(id, jadwal, '');
       CustomToast.successToast("Success", "Berhasil Absen Masuk");
+
+      final HomeController homeC = Get.find();
+      homeC.getInit();
+
       await Future.delayed(Duration.zero);
       Get.offAllNamed(Routes.HOME);
     } catch (e) {
-      CustomToast.errorToast("Error", e.toString());
+      CustomToast.errorToast('Error', 'Ada error $e');
+    }
+  }
+
+  handleAbsenMasuk(String id, String jadwal, String keterangan) async {
+    if (GlobalData.globalKoneksi == Koneksi.online) {
+      OnlineAbsensiService serviceOnline = OnlineAbsensiService();
+      await serviceOnline.simpanAbsenMasuk(
+        keterangan: keterangan,
+        idShift: id,
+        jamKerja: jadwal,
+      );
+    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+      await serviceAbsensi.simpanAbsenMasuk(
+        keterangan: keterangan,
+        idShift: id,
+        jamKerja: jadwal,
+      );
     }
   }
 }

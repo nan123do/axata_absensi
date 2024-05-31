@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 class CustomToast {
   static errorToast(String? title, String? message) {
     Get.rawSnackbar(
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 1),
       dismissDirection: DismissDirection.horizontal,
       messageText: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -50,7 +50,7 @@ class CustomToast {
 
   static successToast(String? title, String? message) {
     Get.rawSnackbar(
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 1),
       dismissDirection: DismissDirection.horizontal,
       messageText: Row(
         crossAxisAlignment: CrossAxisAlignment.center,

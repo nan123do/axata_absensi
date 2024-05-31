@@ -3,11 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class AxataTheme {
   //Screen Util Init
   static double screenHeight = 2340;
   static double screenWidth = 1080;
+  static var currency = NumberFormat("#,##0", "en_US");
 
   // Color
   static Color bgGrey = Color(0xffF5F5F5);
@@ -59,6 +61,12 @@ class AxataTheme {
     fontSize: 30.sp,
     fontWeight: FontWeight.w300,
     color: grey,
+  );
+
+  static TextStyle sevenSmall = GoogleFonts.poppins(
+    fontSize: 24.sp,
+    fontWeight: FontWeight.w300,
+    color: mainColor,
   );
 
   // Box Decoration
@@ -143,5 +151,17 @@ class AxataTheme {
         spreadRadius: 0,
       )
     ],
+  );
+
+  static SizedBox styleJarak12 = SizedBox(
+    height: 12.h,
+  );
+
+  static BoxDecoration styleBoxFilter = BoxDecoration(
+    color: mainColor.withOpacity(0.1),
+    border: Border.all(color: mainColor),
+    borderRadius: BorderRadius.all(
+      Radius.circular(24.r),
+    ),
   );
 }

@@ -14,6 +14,7 @@ class ProfileView extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       bottomNavigationBar: const CustomNavBarView(),
       backgroundColor: AxataTheme.bgGrey,
       body: Stack(
@@ -45,10 +46,10 @@ class ProfileView extends GetView<ProfileController> {
                   ),
                   SizedBox(height: 50.h),
                   ListMenu(
-                    title: 'Tanggal Lahir',
+                    title: 'Tanggal Masuk',
                     subtitle: DateFormat('dd MMMM yyyy', 'id_ID')
                         .format(PegawaiData.tgllahir),
-                    icon: FontAwesomeIcons.birthdayCake,
+                    icon: FontAwesomeIcons.calendarCheck,
                   ),
                   ListMenu(
                     title: 'Alamat',
@@ -65,10 +66,35 @@ class ProfileView extends GetView<ProfileController> {
                     subtitle: PegawaiData.namajabatan,
                     icon: FontAwesomeIcons.star,
                   ),
-                  ListMenu(
-                    title: 'No Rek',
-                    subtitle: PegawaiData.norek,
-                    icon: FontAwesomeIcons.wallet,
+                  SizedBox(height: 51.h),
+                  Obx(
+                    () => Container(
+                      decoration: BoxDecoration(
+                        color: AxataTheme.white,
+                        borderRadius: BorderRadius.circular(40.r),
+                      ),
+                      child: ListTile(
+                        visualDensity: const VisualDensity(horizontal: -4),
+                        leading: FaIcon(
+                          FontAwesomeIcons.lock,
+                          size: 60.r,
+                          color: AxataTheme.black,
+                        ),
+                        title: Text(
+                          'Simpan Info Login',
+                          style: AxataTheme.threeSmall,
+                        ),
+                        trailing: Checkbox(
+                          activeColor: AxataTheme.mainColor,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          value: controller.saveCredential.value,
+                          onChanged: (value) {
+                            controller.handleSimpanInfoLogin(value!);
+                          },
+                        ),
+                      ),
+                    ),
                   ),
                   SizedBox(height: 51.h),
                   GestureDetector(
@@ -109,38 +135,54 @@ class ListMenu extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.icon,
+    this.color,
+    this.ontap,
   });
 
   final String title;
   final String subtitle;
   final IconData icon;
+  final Color? color;
+  final VoidCallback? ontap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AxataTheme.white,
-        borderRadius: BorderRadius.circular(40.r),
-      ),
-      child: ListTile(
-        visualDensity: const VisualDensity(horizontal: -4),
-        leading: FaIcon(
-          icon,
-          size: 60.r,
-          color: AxataTheme.black,
+    return GestureDetector(
+      onTap: ontap ?? () {},
+      child: Container(
+        decoration: BoxDecoration(
+          color: AxataTheme.white,
+          borderRadius: BorderRadius.circular(40.r),
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: AxataTheme.sixSmall,
-            ),
-            Text(
-              subtitle == '' ? '-' : subtitle,
-              style: AxataTheme.threeSmall,
-            )
-          ],
+        child: ListTile(
+          visualDensity: const VisualDensity(horizontal: -4),
+          leading: FaIcon(
+            icon,
+            size: 60.r,
+            color: color ?? AxataTheme.black,
+          ),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              title == '-'
+                  ? Container()
+                  : Text(
+                      title,
+                      style: AxataTheme.sixSmall,
+                    ),
+              Text(
+                subtitle == '' ? '-' : subtitle,
+                style: AxataTheme.threeSmall,
+              )
+            ],
+          ),
+          trailing: ontap == null
+              ? null
+              : FaIcon(
+                  FontAwesomeIcons.chevronRight,
+                  size: 50.r,
+                  color: AxataTheme.black,
+                ),
         ),
       ),
     );

@@ -1,18 +1,17 @@
 import 'package:axata_absensi/models/Shift/datashift_model.dart';
-import 'package:axata_absensi/pages/home/controllers/home_controller.dart';
+import 'package:axata_absensi/utils/datehelper.dart';
 import 'package:axata_absensi/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 
 class SelectShiftPage extends StatelessWidget {
   const SelectShiftPage({
     super.key,
     required this.list,
-    required this.controller,
   });
   final List<DataShiftModel> list;
-  final HomeController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +44,7 @@ class SelectShiftPage extends StatelessWidget {
             itemCount: list.length,
             itemBuilder: (context, index) {
               return GestureDetector(
-                onTap: () => controller.afterSelectShift(list[index]),
+                onTap: () => Get.back(result: list[index]),
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
@@ -70,6 +69,9 @@ class SelectShiftPage extends StatelessWidget {
                     title: Text(
                       list[index].nama,
                       style: AxataTheme.oneBold,
+                    ),
+                    trailing: Text(
+                      '${DateHelper.strHMStoHM(list[index].jamMasuk)} - ${DateHelper.strHMStoHM(list[index].jamKeluar)}',
                     ),
                   ),
                 ),

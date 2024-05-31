@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:axata_absensi/utils/datehelper.dart';
 import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/handle_exception.dart';
 import 'package:axata_absensi/utils/pegawai_data.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 
 class LoginService {
   Future<bool> login() async {
@@ -30,23 +30,29 @@ class LoginService {
           PegawaiData.statusaktif = data[0]['statusaktif'] ?? false;
           PegawaiData.tgllahir = data[0]['tgllahir'] == ''
               ? DateTime.now()
-              : DateFormat("MM/dd/yyyy hh:mm:ss a").parse(data[0]['tgllahir']);
+              : DateHelper.convertStringToDateTime(data[0]['tgllahir']);
           PegawaiData.alamat = data[0]['alamat'] ?? '';
           PegawaiData.telp = data[0]['telp'] ?? '';
           PegawaiData.norek = data[0]['norek'] ?? '';
           PegawaiData.namajabatan = data[0]['namajabatan'] ?? '';
           PegawaiData.menuakses = data[0]['menuakses'] ?? '';
+          if (PegawaiData.menuakses.contains("MenuDataAbsensi") &&
+              PegawaiData.kodepegawai == '') {
+            PegawaiData.isAdmin = true;
+          } else {
+            PegawaiData.isAdmin = false;
+          }
           GlobalData.namatoko = data[0]['namatoko'] ?? GlobalData.namatoko;
           GlobalData.alamattoko =
               data[0]['alamattoko'] ?? GlobalData.alamattoko;
           return true;
         }
       } else {
-        throw Exception('Gagal menghubungi server');
+        throw 'Gagal menghubungi server';
       }
     } catch (e) {
       String errorMessage = ExceptionHandler().getErrorMessage(e);
-      throw Exception(errorMessage);
+      throw errorMessage;
     }
   }
 

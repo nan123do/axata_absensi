@@ -11,17 +11,19 @@ class SplashView extends GetView<SplashController> {
     return Scaffold(
       backgroundColor: AxataTheme.mainColor,
       body: Center(
-        child: controller.isLoading.value
-            ? Container(
-                width: 250,
-                height: 250,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/logo/axata_logo.png'),
+        child: Obx(
+          () => controller.isLoading.value
+              ? Container(
+                  width: 250,
+                  height: 250,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/logo/absensi_white.png'),
+                    ),
                   ),
-                ),
-              )
-            : Container(),
+                )
+              : Container(),
+        ),
       ),
     );
   }

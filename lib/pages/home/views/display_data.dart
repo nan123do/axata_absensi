@@ -49,162 +49,154 @@ class DisplayDataCheckInOut extends StatelessWidget {
       }
     }
 
+    Expanded subTitleRowLeft(String title) {
+      return Expanded(
+        child: Text(
+          title,
+          style: AxataTheme.oneSmall,
+        ),
+      );
+    }
+
     return Column(
       children: [
         Row(
           children: [
-            Container(
-              padding: EdgeInsets.symmetric(
-                vertical: 15.h,
-                horizontal: 45.w,
-              ),
-              decoration: AxataTheme.styleUnselectBoxFilter,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    DateFormat('EEEE dd MMMM yyyy', 'id_ID')
-                        .format(data.jamMasuk),
-                    style: AxataTheme.fourSmall,
-                  ),
-                  Text(
-                    'CHECK-IN',
-                    style: AxataTheme.oneBold.copyWith(
-                      color: getColorCheckin(),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: 15.h,
+                  horizontal: 40.w,
+                ),
+                decoration: AxataTheme.styleUnselectBoxFilter,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      DateFormat('EEEE dd MMMM yyyy', 'id_ID')
+                          .format(data.jamMasuk),
+                      style: AxataTheme.fourSmall,
                     ),
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 190.w,
-                        child: Text(
-                          'Jadwal',
-                          style: AxataTheme.oneSmall,
-                        ),
+                    Text(
+                      'ABSEN MASUK',
+                      style: AxataTheme.oneBold.copyWith(
+                        color: getColorCheckin(),
                       ),
-                      SizedBox(width: 18.w),
-                      Container(
-                        width: 170.h,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(horizontal: 33.w),
-                        decoration: AxataTheme.styleUnselectBoxFilter,
-                        child: FittedBox(
-                          child: Text(
-                            getJadwalAbsen('checkin'),
-                            style: AxataTheme.oneSmall.copyWith(
-                              color: getColorCheckin(),
+                    ),
+                    Row(
+                      children: [
+                        subTitleRowLeft('Jadwal'),
+                        SizedBox(width: 18.w),
+                        Container(
+                          width: 170.h,
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.symmetric(horizontal: 33.w),
+                          decoration: AxataTheme.styleUnselectBoxFilter,
+                          child: FittedBox(
+                            child: Text(
+                              getJadwalAbsen('checkin'),
+                              style: AxataTheme.oneSmall.copyWith(
+                                color: getColorCheckin(),
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 24.h,
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 190.w,
-                        child: Text(
-                          'Jam Absen',
-                          style: AxataTheme.oneSmall,
-                        ),
-                      ),
-                      SizedBox(width: 18.w),
-                      Container(
-                        width: 170.h,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(horizontal: 33.w),
-                        decoration: AxataTheme.styleUnselectBoxFilter,
-                        child: FittedBox(
-                          child: Text(
-                            DateFormat('HH:mm').format(data.jamMasuk),
-                            style: AxataTheme.oneSmall.copyWith(
-                              color: getColorCheckin(),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 24.h,
+                    ),
+                    Row(
+                      children: [
+                        subTitleRowLeft('Jam Absen'),
+                        SizedBox(width: 18.w),
+                        Container(
+                          width: 170.h,
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.symmetric(horizontal: 33.w),
+                          decoration: AxataTheme.styleUnselectBoxFilter,
+                          child: FittedBox(
+                            child: Text(
+                              DateFormat('HH:mm').format(data.jamMasuk),
+                              style: AxataTheme.oneSmall.copyWith(
+                                color: getColorCheckin(),
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                ],
+                        )
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-            const Spacer(),
-            Container(
-              padding: EdgeInsets.symmetric(
-                vertical: 15.h,
-                horizontal: 45.w,
-              ),
-              decoration: AxataTheme.styleUnselectBoxFilter,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    DateFormat('EEEE dd MMMM yyyy', 'id_ID')
-                        .format(data.jamKeluar),
-                    style: AxataTheme.fourSmall,
-                  ),
-                  Text(
-                    'CHECK-OUT',
-                    style: AxataTheme.oneBold.copyWith(
-                      color: AxataTheme.mainColor,
+            SizedBox(width: 20.w),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: 15.h,
+                  horizontal: 40.w,
+                ),
+                decoration: AxataTheme.styleUnselectBoxFilter,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      DateFormat('EEEE dd MMMM yyyy', 'id_ID')
+                          .format(data.jamKeluar),
+                      style: AxataTheme.fourSmall,
                     ),
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 190.w,
-                        child: Text(
-                          'Jadwal',
-                          style: AxataTheme.oneSmall,
-                        ),
+                    Text(
+                      'ABSEN KELUAR',
+                      style: AxataTheme.oneBold.copyWith(
+                        color: AxataTheme.mainColor,
                       ),
-                      SizedBox(width: 18.w),
-                      Container(
-                        width: 170.h,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(horizontal: 33.w),
-                        decoration: AxataTheme.styleUnselectBoxFilter,
-                        child: FittedBox(
-                          child: Text(
-                            getJadwalAbsen('checkout'),
-                            style: AxataTheme.oneSmall.copyWith(
-                              color: AxataTheme.mainColor,
+                    ),
+                    Row(
+                      children: [
+                        subTitleRowLeft('Jadwal'),
+                        SizedBox(width: 18.w),
+                        Container(
+                          width: 170.h,
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.symmetric(horizontal: 33.w),
+                          decoration: AxataTheme.styleUnselectBoxFilter,
+                          child: FittedBox(
+                            child: Text(
+                              getJadwalAbsen('checkout'),
+                              style: AxataTheme.oneSmall.copyWith(
+                                color: AxataTheme.mainColor,
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 24.h,
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        'Jam Absen',
-                        style: AxataTheme.oneSmall,
-                      ),
-                      SizedBox(width: 18.w),
-                      Container(
-                        width: 170.h,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(horizontal: 33.w),
-                        decoration: AxataTheme.styleUnselectBoxFilter,
-                        child: FittedBox(
-                          child: Text(
-                            getJamKeluar(),
-                            style: AxataTheme.oneSmall.copyWith(
-                              color: AxataTheme.mainColor,
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 24.h,
+                    ),
+                    Row(
+                      children: [
+                        subTitleRowLeft('Jam Absen'),
+                        SizedBox(width: 18.w),
+                        Container(
+                          width: 170.h,
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.symmetric(horizontal: 33.w),
+                          decoration: AxataTheme.styleUnselectBoxFilter,
+                          child: FittedBox(
+                            child: Text(
+                              getJamKeluar(),
+                              style: AxataTheme.oneSmall.copyWith(
+                                color: AxataTheme.mainColor,
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                ],
+                        )
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:axata_absensi/models/Helper/pesan_model.dart';
 import 'package:axata_absensi/utils/global_data.dart';
+import 'package:axata_absensi/utils/handle_exception.dart';
 import 'package:http/http.dart' as http;
 
 class HelperService {
@@ -505,5 +506,42 @@ class HelperService {
         break;
     }
     return xValue;
+  }
+
+  Future<String> updateSetting({
+    required String kode,
+    required String nilai,
+  }) async {
+    try {
+      var url = Uri.http(
+        GlobalData.globalWSApi + GlobalData.globalPort,
+        "/api/product/update_setting",
+      );
+
+      var response = await http.post(
+        url,
+        body: {
+          'appId': GlobalData.idcloud,
+          'Kode': kode,
+          'nilai': nilai,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        PesanModel pesan = PesanModel.fromJson(data);
+        if (pesan.status == "success") {
+          return pesan.keterangan;
+        } else {
+          throw Exception(pesan.keterangan);
+        }
+      } else {
+        var status = response.statusCode;
+        throw Exception('status: $status, Gagal menghubungi server');
+      }
+    } catch (e) {
+      String errorMessage = ExceptionHandler().getErrorMessage(e);
+      throw errorMessage;
+    }
   }
 }
