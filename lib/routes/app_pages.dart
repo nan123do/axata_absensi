@@ -22,6 +22,8 @@ import 'package:axata_absensi/pages/smileface/bindings/smileface_binding.dart';
 import 'package:axata_absensi/pages/smileface/views/smileface_view.dart';
 import 'package:axata_absensi/pages/splash/bindings/splash_binding.dart';
 import 'package:axata_absensi/pages/splash/views/splash_view.dart';
+import 'package:axata_absensi/pages/tenant/bindings/tenant_binding.dart';
+import 'package:axata_absensi/pages/tenant/views/tenant_view.dart';
 import 'package:axata_absensi/pages/test/bindings/test_binding.dart';
 import 'package:axata_absensi/pages/test/views/test_view.dart';
 import 'package:get/get.dart';
@@ -104,6 +106,12 @@ class AppPages {
       name: _Paths.PEGAWAI,
       page: () => PegawaiView(),
       binding: PegawaiBinding(),
+      transition: Transition.rightToLeftWithFade,
+    ),
+    GetPage(
+      name: _Paths.TENANT,
+      page: () => TenantView(),
+      binding: TenantBinding(),
       transition: Transition.rightToLeftWithFade,
     ),
   ];

@@ -18,7 +18,7 @@ class SmileFaceView extends GetView<SmileFaceController> {
         () => controller.isLoading.value
             ? const LoadingPage()
             : Obx(
-                () => controller.androidVersion.value == '12'
+                () => controller.versionsToCheck.contains(controller.androidVersion.value)
                     ? SmileFaceAndroid12View(controller: controller)
                     : controller.cameraController!.value.isInitialized
                         ? SmileFaceAndroidOtherView(controller: controller)

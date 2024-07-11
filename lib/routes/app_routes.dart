@@ -17,6 +17,7 @@ abstract class Routes {
   static const ABSENSI = _Paths.ABSENSI;
   static const SETTING = _Paths.SETTING;
   static const PEGAWAI = _Paths.PEGAWAI;
+  static const TENANT = _Paths.TENANT;
 }
 
 abstract class _Paths {
@@ -32,4 +33,5 @@ abstract class _Paths {
   static const ABSENSI = '/absensi';
   static const SETTING = '/setting';
   static const PEGAWAI = '/pegawai';
+  static const TENANT = '/tenant';
 }

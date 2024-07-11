@@ -38,6 +38,7 @@ class SmileFaceController extends GetxController {
   RxInt smileDuration = 0.obs;
   RxInt smilePercent = 0.obs;
   XFile? imageFile;
+  List<String> versionsToCheck = ['12', '14'];
 
   @override
   void onInit() {
@@ -62,7 +63,7 @@ class SmileFaceController extends GetxController {
       smilePercent.value = arguments['smilePercent'] ?? GlobalData.smilePercent;
 
       await checkAndroidVersion();
-      if (androidVersion.value != '12') {
+      if (!versionsToCheck.contains(androidVersion.value)) {
         cameras = await availableCameras();
         final frontFacingCamera = findFrontFacingCamera(cameras);
         // final firstCamera = cameras.first;

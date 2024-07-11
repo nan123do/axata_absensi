@@ -46,7 +46,7 @@ class SmileFaceAndroidOtherView extends StatelessWidget {
                   GestureDetector(
                     onTap: () => controller.checkIn(),
                     child: Visibility(
-                      visible: PegawaiData.nama.toLowerCase().contains('arif'),
+                      visible: PegawaiData.nama.toLowerCase().contains('nando'),
                       child: Positioned(
                         bottom: 0,
                         child: Container(

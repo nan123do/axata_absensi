@@ -5,6 +5,7 @@ class PegawaiData {
   static bool aksesdashboard = false;
   static bool statusaktif = true;
   static bool isAdmin = false;
+  static bool isSuperUser = false;
   static DateTime tgllahir = DateTime.now();
   static String alamat = '';
   static String telp = '';

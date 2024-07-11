@@ -362,6 +362,7 @@ class AbsensiService {
       );
 
       var request = http.MultipartRequest('POST', uri)
+        ..fields['kodepegawai'] = PegawaiData.kodepegawai
         ..files.add(
           await http.MultipartFile.fromPath(
             'imageFile',

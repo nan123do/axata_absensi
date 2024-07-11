@@ -28,38 +28,49 @@ class OnlineLoginService {
           throw Exception('User tidak ditemukan');
         } else {
           Map<String, dynamic> user = data['user'];
-          Map<String, dynamic> profile = data['user']['userprofile'];
-          Map<String, dynamic> tenant = data['user']['userprofile']['tenant'];
+          Map<String, dynamic> profile = {};
+          Map<String, dynamic> tenant = {};
+
+          if (data['user']['userprofile'] != null) {
+            profile = data['user']['userprofile'];
+            PegawaiData.tgllahir = profile['tgl_masuk'] == ''
+                ? DateTime.now()
+                : DateTime.parse(profile['tgl_masuk']);
+            PegawaiData.alamat = profile['alamat'] ?? '';
+            PegawaiData.telp = profile['telp'] ?? '';
+            PegawaiData.norek = '';
+            PegawaiData.namajabatan = profile['namajabatan'] ?? '';
+            PegawaiData.menuakses = '';
+            PegawaiData.isAdmin = profile['role'] == '1' ? true : false;
+
+            if (data['user']['userprofile']['tenant'] != null) {
+              tenant = data['user']['userprofile']['tenant'];
+              // Setting Tenant
+              GlobalData.namatoko = tenant['nama'] ?? GlobalData.namatoko;
+              GlobalData.alamattoko = tenant['alamat'] ?? GlobalData.alamattoko;
+              GlobalData.gajiPermenit =
+                  tenant['gaji_permenit'].toDouble() ?? 20;
+              GlobalData.office = {
+                'latitude': double.parse(tenant['latitude']),
+                'longitude': double.parse(tenant['longitude']),
+                'radius': tenant['radius'],
+              };
+              GlobalData.smileDuration = tenant['smile_duration'];
+              GlobalData.smilePercent = tenant['smile_percent'];
+              GlobalData.statusShift =
+                  tenant['status_shift'] == '1' ? true : false;
+              GlobalData.idPenyewa = tenant['id'].toString();
+            }
+          }
 
           PegawaiData.tokenAuth = 'Token ${data['token']}';
           PegawaiData.nama = user['first_name'] ?? '';
           PegawaiData.kodepegawai = user['id'].toString();
           PegawaiData.idjenisuser = '';
           PegawaiData.aksesdashboard = false;
+          PegawaiData.isSuperUser = user['is_superuser'] ?? false;
           PegawaiData.statusaktif = user['is_active'] ?? false;
-          PegawaiData.tgllahir = profile['tgl_masuk'] == ''
-              ? DateTime.now()
-              : DateTime.parse(profile['tgl_masuk']);
-          PegawaiData.alamat = profile['alamat'] ?? '';
-          PegawaiData.telp = profile['telp'] ?? '';
-          PegawaiData.norek = '';
-          PegawaiData.namajabatan = profile['namajabatan'] ?? '';
-          PegawaiData.menuakses = '';
-          PegawaiData.isAdmin = profile['role'] == '1' ? true : false;
 
-          // Setting Tenant
-          GlobalData.namatoko = tenant['nama'] ?? GlobalData.namatoko;
-          GlobalData.alamattoko = tenant['alamat'] ?? GlobalData.alamattoko;
-          GlobalData.gajiPermenit = tenant['gaji_permenit'].toDouble() ?? 20;
-          GlobalData.office = {
-            'latitude': double.parse(tenant['latitude']),
-            'longitude': double.parse(tenant['longitude']),
-            'radius': tenant['radius'],
-          };
-          GlobalData.smileDuration = tenant['smile_duration'];
-          GlobalData.smilePercent = tenant['smile_percent'];
-          GlobalData.statusShift = tenant['status_shift'] == '1' ? true : false;
-          GlobalData.idPenyewa = tenant['id'].toString();
           return true;
         }
       } else {
