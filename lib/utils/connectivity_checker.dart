@@ -2,8 +2,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 
 class ConnectivityChecker {
   static Future<bool> checkConnection() async {
-    ConnectivityResult connectivityResult =
+    final List<ConnectivityResult> connectivityResult =
         await (Connectivity().checkConnectivity());
-    return connectivityResult != ConnectivityResult.none;
+    return !connectivityResult.contains(ConnectivityResult.none);
   }
 }

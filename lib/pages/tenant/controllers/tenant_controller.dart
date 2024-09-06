@@ -54,7 +54,7 @@ class TenantController extends GetxController {
           GestureDetector(
             onTap: () {
               Get.back();
-              // goUbahPage(data);
+              goUbahPage(data);
             },
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 30.h),
@@ -68,8 +68,8 @@ class TenantController extends GetxController {
           ),
           const Divider(),
           GestureDetector(
-            onTap: () {
-              Get.back();
+            onTap: () async {
+              await goHapusPage(data);
               // goUbahPasswordPage(data);
             },
             child: Container(
@@ -77,24 +77,11 @@ class TenantController extends GetxController {
               width: double.infinity,
               alignment: Alignment.center,
               child: Text(
-                'Ubah Password',
+                'Hapus',
                 style: AxataTheme.threeSmall,
               ),
             ),
           ),
-          const Divider(),
-          // GestureDetector(
-          //   onTap: () => goHapusPage(data),
-          //   child: Container(
-          //     padding: EdgeInsets.symmetric(vertical: 30.h),
-          //     width: double.infinity,
-          //     alignment: Alignment.center,
-          //     child: Text(
-          //       'Hapus',
-          //       style: AxataTheme.threeSmall,
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );
@@ -116,6 +103,20 @@ class TenantController extends GetxController {
     );
   }
 
+  goUbahPage(DataTenantModel data) {
+    id.value = data.id;
+    namaC.text = data.nama;
+    alamatC.text = data.alamat;
+
+    Get.to(
+      () => SaveTenant(
+        controller: this,
+        isAdd: false,
+      ),
+      transition: Transition.rightToLeftWithFade,
+    );
+  }
+
   errorSaveMesssage(String title) {
     CustomToast.errorToast("Error", title);
     isLoading.value = false;
@@ -127,12 +128,12 @@ class TenantController extends GetxController {
       return;
     }
 
-    if (usernameC.text == '') {
+    if (usernameC.text == '' && isAdd) {
       errorSaveMesssage('Username admin harus diisi.');
       return;
     }
 
-    if (emailC.text == '') {
+    if (emailC.text == '' && isAdd) {
       errorSaveMesssage('Email admin harus diisi.');
       return;
     }
@@ -140,12 +141,13 @@ class TenantController extends GetxController {
     final RegExp emailRegexp = RegExp(
       r'^[a-zA-Z0-9._]+@[a-zA-Z0-9]+\.[a-zA-Z]+',
     );
-    if (!emailRegexp.hasMatch(emailC.text)) {
+
+    if (!emailRegexp.hasMatch(emailC.text) && isAdd) {
       errorSaveMesssage('Format email tidak valid.');
       return;
     }
 
-    if (firstnameC.text == '') {
+    if (firstnameC.text == '' && isAdd) {
       errorSaveMesssage('Nama admin harus diisi.');
       return;
     }
@@ -187,6 +189,27 @@ class TenantController extends GetxController {
         id: id.value,
         nama: namaC.text,
         alamat: alamatC.text,
+      );
+    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {}
+  }
+
+  goHapusPage(DataTenantModel data) async {
+    try {
+      id.value = data.id;
+      await handleHapusTenant();
+      Get.back();
+      CustomToast.successToast('Success', 'Berhasil Menghapus Penyewa');
+      getInit();
+    } catch (e) {
+      CustomToast.errorToast('Error', '$e');
+    }
+  }
+
+  handleHapusTenant() async {
+    if (GlobalData.globalKoneksi == Koneksi.online) {
+      OnlineTenantService serviceOnline = OnlineTenantService();
+      await serviceOnline.hapusTenant(
+        id: id.value,
       );
     } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {}
   }

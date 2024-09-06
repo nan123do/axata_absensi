@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:http/http.dart' as http;
 import 'package:axata_absensi/components/custom_toast.dart';
 import 'package:axata_absensi/components/filter_multimap.dart';
 import 'package:axata_absensi/components/filter_singlemap.dart';
@@ -5,6 +9,7 @@ import 'package:axata_absensi/models/Absensi/dataabsen_model.dart';
 import 'package:axata_absensi/models/Pegawai/datapegawai_model.dart';
 import 'package:axata_absensi/models/Shift/datashift_model.dart';
 import 'package:axata_absensi/pages/absensi/views/addabsensi_view.dart';
+import 'package:axata_absensi/pages/absensi/views/detailabsensi_view.dart';
 import 'package:axata_absensi/pages/home/views/selectshift.dart';
 import 'package:axata_absensi/services/absensi_service.dart';
 import 'package:axata_absensi/components/filter_helper.dart';
@@ -399,6 +404,67 @@ class AbsensiController extends GetxController {
     );
   }
 
+  goDetailPage(DataAbsenModel data) async {
+    Get.back();
+
+    // Get Color
+    String jamKerja = '-';
+    if (data.jamKerja != '') {
+      List<String> jadwal = data.jamKerja.split('-');
+      jamKerja = jadwal[0];
+    }
+
+    Color color = isTimeBeforeJadwalCheckIn(
+      DateFormat('HH:mm').format(data.jamMasuk),
+      jamKerja,
+    )
+        ? AxataTheme.green
+        : AxataTheme.red;
+
+    if (GlobalData.globalKoneksi == Koneksi.online) {
+      final response = await http.head(Uri.parse(
+          'http://${GlobalData.globalAPI}${GlobalData.globalPort}${data.foto}'));
+
+      if (response.statusCode == 200) {
+        // Jika gambar tersedia, lakukan navigasi
+        Get.to(
+          () => DetailAbsensiView(
+            tanggal: data.jamMasuk,
+            color: color,
+            url: data.foto,
+          ),
+        );
+      } else {
+        Get.to(
+          () => DetailAbsensiView(
+            tanggal: data.jamMasuk,
+            color: color,
+            url: null,
+          ),
+        );
+      }
+    } else {
+      if (data.foto != '') {
+        Uint8List bytes = base64Decode(data.foto);
+        Get.to(
+          () => DetailAbsensiView(
+            foto: bytes,
+            tanggal: data.jamMasuk,
+            color: color,
+          ),
+        );
+      } else {
+        Get.to(
+          () => DetailAbsensiView(
+            foto: null,
+            tanggal: data.jamMasuk,
+            color: color,
+          ),
+        );
+      }
+    }
+  }
+
   goUbahPage(DataAbsenModel data) {
     Get.back();
     pegawai.value = data.nama;
@@ -433,13 +499,28 @@ class AbsensiController extends GetxController {
     );
   }
 
-  void goDialogAbsensi(DataAbsenModel data) {
+  void goDialogAbsensi(
+    DataAbsenModel data,
+  ) {
     Get.defaultDialog(
       title: '',
       titlePadding: EdgeInsets.symmetric(vertical: 25.h),
       titleStyle: const TextStyle(fontSize: 0),
       content: Column(
         children: [
+          GestureDetector(
+            onTap: () => goDetailPage(data),
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 30.h),
+              width: double.infinity,
+              alignment: Alignment.center,
+              child: Text(
+                'Lihat Foto',
+                style: AxataTheme.threeSmall,
+              ),
+            ),
+          ),
+          const Divider(),
           GestureDetector(
             onTap: () => goUbahPage(data),
             child: Container(
@@ -455,7 +536,7 @@ class AbsensiController extends GetxController {
           const Divider(),
           GestureDetector(
             onTap: () {
-              handleHapus(data.id);
+              handleHapus(data.id, data.foto);
             },
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 30.h),
@@ -664,14 +745,14 @@ class AbsensiController extends GetxController {
     }
   }
 
-  void handleHapus(String id) async {
+  void handleHapus(String id, String foto) async {
     isLoading.value = true;
     try {
       if (GlobalData.globalKoneksi == Koneksi.online) {
         OnlineAbsensiService serviceOnline = OnlineAbsensiService();
         await serviceOnline.hapusAbsensi(id: id);
       } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
-        await serviceAbsensi.hapusAbsensi(id: id);
+        await serviceAbsensi.hapusAbsensi(id: id, foto: foto);
       }
       Get.back();
       CustomToast.successToast("Success", "Absen Berhasil Dihapus");

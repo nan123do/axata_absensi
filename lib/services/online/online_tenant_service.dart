@@ -96,7 +96,7 @@ class OnlineTenantService {
         url,
         body: {
           "id": id,
-          "first_name": nama,
+          "nama": nama,
           "alamat": alamat,
         },
         headers: {
@@ -127,7 +127,7 @@ class OnlineTenantService {
     try {
       var url = Uri.http(
         GlobalData.globalAPI + GlobalData.globalPort,
-        "/api/auth/users/",
+        "/api/tenant/company/delete",
       );
 
       var response = await http.delete(
@@ -149,11 +149,7 @@ class OnlineTenantService {
         }
       } else {
         Map<String, dynamic> data = jsonDecode(response.body);
-        if (data['meta']['message'] == "invalid") {
-          throw Exception(data['data']['message']);
-        } else {
-          throw Exception(data['meta']['message']);
-        }
+        throw data['meta']['message'];
       }
     } catch (e) {
       String errorMessage = ExceptionHandler().getErrorMessage(e);

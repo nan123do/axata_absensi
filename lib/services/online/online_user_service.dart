@@ -12,7 +12,7 @@ class OnlineUserService {
       var url = Uri.http(
           GlobalData.globalAPI + GlobalData.globalPort, "/api/auth/users/", {
         'role': '2',
-        'id_tenant': '2',
+        'id_tenant': GlobalData.idPenyewa,
       });
       var response = await http.get(
         url,

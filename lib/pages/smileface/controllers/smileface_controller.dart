@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:axata_absensi/components/custom_toast.dart';
 import 'package:axata_absensi/pages/checkin/controllers/checkin_controller.dart';
-import 'package:axata_absensi/services/absensi_service.dart';
-import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/image_processor.dart';
 import 'package:camera/camera.dart';
@@ -19,6 +17,7 @@ class SmileFaceController extends GetxController {
   RxBool isDetecting = false.obs;
   RxBool isSmiling = false.obs;
   RxBool isToastShowing = false.obs;
+  RxBool isNando = false.obs;
   RxString tingkatSenyum = '0%'.obs;
   RxString androidVersion = '1'.obs;
   CameraController? cameraController;
@@ -170,7 +169,18 @@ class SmileFaceController extends GetxController {
   Future<void> _processCameraImage(CameraImage image) async {
     if (isDetecting.value) return;
     isDetecting.value = true;
+
     try {
+      // If Pegawai Nando
+      if (isNando.isTrue) {
+        ImageProcessor processor = ImageProcessor();
+        String filename = '${DateTime.now().microsecond}.jpg';
+        XFile xFile = await processor.saveImageFromCamera(image, filename);
+
+        await checkIn(file: xFile);
+        return;
+      }
+
       final WriteBuffer allBytes = WriteBuffer();
       for (Plane plane in image.planes) {
         allBytes.putUint8List(plane.bytes);
@@ -259,19 +269,18 @@ class SmileFaceController extends GetxController {
 
     isLoading.value = true;
     try {
-      // Matikan  detektor wajah di sini setelah berpindah halaman
-      faceDetector.close();
       isSmiling.value = false;
       tingkatSenyum.value = '0';
+
+      // Matikan  detektor wajah di sini setelah berpindah halaman
+      faceDetector.close();
+
       // Matikan kamera wajah di sini setelah berpindah halaman
       if (cameraController != null && cameraController!.value.isInitialized) {
         await cameraController!.dispose();
       }
 
-      await checkInController.simpanCheckIn();
-      if (file != null) {
-        await handleSimpanGambar(file);
-      }
+      await checkInController.simpanCheckIn(file: file);
     } catch (e) {
       CustomToast.errorToast("Error", e.toString());
     } finally {
@@ -331,13 +340,5 @@ class SmileFaceController extends GetxController {
     }
     faceDetector.close();
     isLoading.value = false;
-  }
-
-  handleSimpanGambar(XFile source) async {
-    if (GlobalData.globalKoneksi == Koneksi.online) {
-    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
-      AbsensiService serviceAbsensi = AbsensiService();
-      await serviceAbsensi.simpanGambar(source);
-    }
   }
 }

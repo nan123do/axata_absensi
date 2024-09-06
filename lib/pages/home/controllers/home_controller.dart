@@ -60,7 +60,9 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
 
-    getInit();
+    if (PegawaiData.isSuperUser == false) {
+      getInit();
+    }
   }
 
   getInit() async {

@@ -79,82 +79,90 @@ class SaveTenant extends StatelessWidget {
                   ),
                 ),
                 AxataTheme.styleJarak12,
-                Text(
-                  'Username Admin',
-                  style: AxataTheme.sixSmall,
-                ),
-                SizedBox(height: 12.h),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 30.w,
-                    vertical: 24.h,
-                  ),
-                  decoration: AxataTheme.styleUnselectBoxFilter,
-                  child: TextFormField(
-                    controller: controller.usernameC,
-                    keyboardType: TextInputType.text,
-                    style: AxataTheme.threeSmall,
-                    decoration: InputDecoration.collapsed(
-                      hintText: 'Masukkan Username Admin',
-                      hintStyle: AxataTheme.threeSmall.copyWith(
-                        color: Colors.black45,
+                Visibility(
+                  visible: isAdd,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Username Admin',
+                        style: AxataTheme.sixSmall,
                       ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 12.h),
-                Text(
-                  'Email Admin',
-                  style: AxataTheme.sixSmall,
-                ),
-                SizedBox(height: 12.h),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 30.w,
-                    vertical: 24.h,
-                  ),
-                  decoration: AxataTheme.styleUnselectBoxFilter,
-                  child: TextFormField(
-                    controller: controller.emailC,
-                    keyboardType: TextInputType.emailAddress,
-                    style: AxataTheme.threeSmall,
-                    decoration: InputDecoration.collapsed(
-                      hintText: 'Masukkan Email Admin',
-                      hintStyle: AxataTheme.threeSmall.copyWith(
-                        color: Colors.black45,
+                      SizedBox(height: 12.h),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 30.w,
+                          vertical: 24.h,
+                        ),
+                        decoration: AxataTheme.styleUnselectBoxFilter,
+                        child: TextFormField(
+                          controller: controller.usernameC,
+                          keyboardType: TextInputType.text,
+                          style: AxataTheme.threeSmall,
+                          decoration: InputDecoration.collapsed(
+                            hintText: 'Masukkan Username Admin',
+                            hintStyle: AxataTheme.threeSmall.copyWith(
+                              color: Colors.black45,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-                AxataTheme.styleJarak12,
-                Text(
-                  'Nama Admin',
-                  style: AxataTheme.sixSmall,
-                ),
-                SizedBox(height: 12.h),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 30.w,
-                    vertical: 24.h,
-                  ),
-                  decoration: AxataTheme.styleUnselectBoxFilter,
-                  child: TextFormField(
-                    controller: controller.firstnameC,
-                    keyboardType: TextInputType.text,
-                    style: AxataTheme.threeSmall,
-                    decoration: InputDecoration.collapsed(
-                      hintText: 'Masukkan Nama Admin',
-                      hintStyle: AxataTheme.threeSmall.copyWith(
-                        color: Colors.black45,
+                      SizedBox(height: 12.h),
+                      Text(
+                        'Email Admin',
+                        style: AxataTheme.sixSmall,
                       ),
-                    ),
+                      SizedBox(height: 12.h),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 30.w,
+                          vertical: 24.h,
+                        ),
+                        decoration: AxataTheme.styleUnselectBoxFilter,
+                        child: TextFormField(
+                          controller: controller.emailC,
+                          keyboardType: TextInputType.emailAddress,
+                          style: AxataTheme.threeSmall,
+                          decoration: InputDecoration.collapsed(
+                            hintText: 'Masukkan Email Admin',
+                            hintStyle: AxataTheme.threeSmall.copyWith(
+                              color: Colors.black45,
+                            ),
+                          ),
+                        ),
+                      ),
+                      AxataTheme.styleJarak12,
+                      Text(
+                        'Nama Admin',
+                        style: AxataTheme.sixSmall,
+                      ),
+                      SizedBox(height: 12.h),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 30.w,
+                          vertical: 24.h,
+                        ),
+                        decoration: AxataTheme.styleUnselectBoxFilter,
+                        child: TextFormField(
+                          controller: controller.firstnameC,
+                          keyboardType: TextInputType.text,
+                          style: AxataTheme.threeSmall,
+                          decoration: InputDecoration.collapsed(
+                            hintText: 'Masukkan Nama Admin',
+                            hintStyle: AxataTheme.threeSmall.copyWith(
+                              color: Colors.black45,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '*password default "ADMIN"',
+                        style: AxataTheme.sixSmall,
+                      ),
+                      AxataTheme.styleJarak12,
+                    ],
                   ),
                 ),
-                Text(
-                  '*password default "ADMIN"',
-                  style: AxataTheme.sixSmall,
-                ),
-                AxataTheme.styleJarak12,
                 SizedBox(height: 72.h),
                 Obx(
                   () => GestureDetector(

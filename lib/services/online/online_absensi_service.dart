@@ -4,6 +4,7 @@ import 'package:axata_absensi/models/Absensi/dataabsen_model.dart';
 import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/handle_exception.dart';
 import 'package:axata_absensi/utils/pegawai_data.dart';
+import 'package:camera/camera.dart';
 import 'package:http/http.dart' as http;
 
 class OnlineAbsensiService {
@@ -233,6 +234,7 @@ class OnlineAbsensiService {
     required String keterangan,
     required String idShift,
     required String jamKerja,
+    required XFile? file,
   }) async {
     try {
       var url = Uri.http(
@@ -240,25 +242,42 @@ class OnlineAbsensiService {
         "/api/absensi/",
       );
 
-      var response = await http.post(
-        url,
-        body: {
-          'iduser': PegawaiData.kodepegawai,
-          'tarif': GlobalData.gajiPermenit.toString(),
-          'idshift': idShift,
-          'jamkerja': jamKerja,
-          'keterangan': keterangan,
-        },
-        headers: {
-          'Authorization': PegawaiData.tokenAuth,
-        },
-      );
+      var request = http.MultipartRequest('POST', url);
+      // Menambahkan field dalam body
+      request.fields['iduser'] = PegawaiData.kodepegawai;
+      request.fields['tarif'] = GlobalData.gajiPermenit.toString();
+      request.fields['idshift'] = idShift;
+      request.fields['jamkerja'] = jamKerja;
+      request.fields['keterangan'] = keterangan;
+
+      // Menambahkan file jika ada
+      if (file != null) {
+        // Konversi XFile ke File
+        var stream = http.ByteStream(Stream.castFrom(file.openRead()));
+        var length = await file.length();
+        var multipartFile = http.MultipartFile(
+          'foto',
+          stream,
+          length,
+          filename: file.name,
+        );
+        request.files.add(multipartFile);
+      }
+
+      // Menambahkan header authorization
+      request.headers['Authorization'] = PegawaiData.tokenAuth;
+
+      // Kirim request
+      var response = await request.send();
+
+      // Tangkap response dan decode hasilnya
+      var responseData = await http.Response.fromStream(response);
 
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body)['meta'];
+        Map<String, dynamic> data = jsonDecode(responseData.body)['meta'];
         return data['message'];
       } else {
-        throw jsonDecode(response.body)['data']['message'];
+        throw jsonDecode(responseData.body)['data']['message'];
       }
     } catch (e) {
       String errorMessage = ExceptionHandler().getErrorMessage(e);

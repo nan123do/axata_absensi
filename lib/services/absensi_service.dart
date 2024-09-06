@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:axata_absensi/models/Absensi/dataabsen_model.dart';
 import 'package:axata_absensi/models/Helper/pesan_model.dart';
 import 'package:axata_absensi/models/Pegawai/datapegawai_model.dart';
+import 'package:axata_absensi/utils/datehelper.dart';
 import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/handle_exception.dart';
 import 'package:axata_absensi/utils/pegawai_data.dart';
@@ -143,7 +144,7 @@ class AbsensiService {
       var data = jsonDecode(response.body);
       PesanModel pesan = PesanModel.fromJson(data);
       if (pesan.status == "Berhasil") {
-        return DateTime.parse(pesan.keterangan);
+        return DateHelper.convertStringToDateTime(pesan.keterangan);
       } else {
         throw Exception(pesan.keterangan);
       }
@@ -320,6 +321,7 @@ class AbsensiService {
 
   Future<String> hapusAbsensi({
     required String id,
+    required String foto,
   }) async {
     try {
       var url = Uri.http(
@@ -332,6 +334,7 @@ class AbsensiService {
         body: {
           'appId': GlobalData.idcloud,
           'id': id,
+          'foto': foto,
         },
       );
 

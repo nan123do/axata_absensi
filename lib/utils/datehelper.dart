@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 class DateHelper {
   static DateTime convertStringToDateTime(String dateString) {
     List<String> formats = [
+      'yyyy-MM-ddTHH.mm.ss',
       'yyyy-MM-dd HH:mm:ss',
       'dd/MM/yyyy HH:mm:ss',
       'yyyy-MM-ddTHH:mm:ss',

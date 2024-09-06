@@ -101,8 +101,12 @@ class OnlineShiftService {
     for (var item in data) {
       String idDetail = item.idDetail.padRight(10);
       String hari = item.hari.padRight(10);
-      String jamMasuk = (item.jamMasuk).padRight(10);
-      String jamKeluar = (item.jamKeluar).padRight(10);
+      String jamMasuk = item.jamMasuk.length > 5
+          ? (item.jamMasuk).padRight(10)
+          : ('${item.jamMasuk}:00').padRight(10);
+      String jamKeluar = item.jamKeluar.length > 5
+          ? (item.jamKeluar).padRight(10)
+          : ('${item.jamKeluar}:00').padRight(10);
       String statusAktif = item.statusAktif ? '1' : '0';
 
       detailShift +=

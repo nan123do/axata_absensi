@@ -13,10 +13,10 @@ class GlobalData {
   static bool saveCredential = false;
   static Koneksi globalKoneksi = Koneksi.online; // online, axatapos, offline
   static String globalAPI =
-      '192.168.100.37'; //103.175.219.123, 157.245.206.185, 192.168.100.37
+      '157.245.206.185'; //103.175.219.123, 157.245.206.185, 192.168.100.121
   static String globalWSApi =
-      '192.168.100.37'; // 192.168.100.37 , 103.175.219.123, 157.245.206.185
-  static String globalPort = ':8000'; // 5000, 7000, 8000
+      '157.245.206.185'; // 192.168.100.121 , 103.175.219.123, 157.245.206.185
+  static String globalPort = ':7000'; // 5000, 7000, 8000
   static double gajiPermenit = 0;
   static int smileDuration = 3;
   static int smilePercent = 95;

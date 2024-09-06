@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:axata_absensi/components/custom_toast.dart';
+import 'package:axata_absensi/components/loading_screen.dart';
 import 'package:axata_absensi/models/Shift/datashift_model.dart';
 import 'package:axata_absensi/pages/home/controllers/home_controller.dart';
 import 'package:axata_absensi/routes/app_pages.dart';
@@ -12,6 +13,7 @@ import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/locationhelper.dart';
 import 'package:axata_absensi/utils/theme.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -215,10 +217,11 @@ class CheckInController extends GetxController {
       Get.toNamed(Routes.SMILEFACE);
     } else {
       CustomToast.errorToast("Error", "Anda masih berada diluar kantor");
+      Get.toNamed(Routes.SMILEFACE);
     }
   }
 
-  Future<void> simpanCheckIn() async {
+  Future<void> simpanCheckIn({XFile? file}) async {
     try {
       DataShiftModel? data = homeController.selectedShift;
       String jadwalMasuk = DateHelper.strHMStoHM(data!.jamMasuk);
@@ -261,19 +264,9 @@ class CheckInController extends GetxController {
               ),
             ],
           ),
-          onConfirm: () async {
-            try {
-              await handleAbsenMasuk(
-                data.id,
-                '$jadwalMasuk-$jadwalKeluar',
-                keteranganC.text,
-              );
-              CustomToast.successToast("Success", "Berhasil Absen Masuk");
-              await Future.delayed(Duration.zero);
-              Get.offAllNamed(Routes.HOME);
-            } catch (e) {
-              CustomToast.errorToast('Error', 'Ada error $e');
-            }
+          onConfirm: () {
+            simpanAbsenMasukAPI(
+                data.id, '$jadwalMasuk-$jadwalKeluar', keteranganC.text, file);
           },
           textConfirm: "Oke",
           confirmTextColor: AxataTheme.white,
@@ -287,35 +280,56 @@ class CheckInController extends GetxController {
           },
         );
       } else {
-        simpanAbsenMasukAPI(data.id, '$jadwalMasuk-$jadwalKeluar');
+        simpanAbsenMasukAPI(data.id, '$jadwalMasuk-$jadwalKeluar', '', file);
       }
     } catch (e) {
       CustomToast.errorToast("Error", e.toString());
     }
   }
 
-  Future<void> simpanAbsenMasukAPI(String id, String jadwal) async {
+  Future<void> simpanAbsenMasukAPI(
+    String id,
+    String jadwal,
+    String keterangan,
+    XFile? file,
+  ) async {
     try {
-      await handleAbsenMasuk(id, jadwal, '');
+      LoadingScreen.show();
+      await handleAbsenMasuk(id, jadwal, keterangan, file);
+      if (file != null && GlobalData.globalKoneksi == Koneksi.axatapos) {
+        await handleSimpanGambar(file);
+      }
       CustomToast.successToast("Success", "Berhasil Absen Masuk");
 
       final HomeController homeC = Get.find();
       homeC.getInit();
 
       await Future.delayed(Duration.zero);
+      LoadingScreen.hide();
       Get.offAllNamed(Routes.HOME);
     } catch (e) {
       CustomToast.errorToast('Error', 'Ada error $e');
+      LoadingScreen.hide();
     }
   }
 
-  handleAbsenMasuk(String id, String jadwal, String keterangan) async {
+  handleSimpanGambar(XFile source) async {
+    if (GlobalData.globalKoneksi == Koneksi.online) {
+    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+      AbsensiService serviceAbsensi = AbsensiService();
+      await serviceAbsensi.simpanGambar(source);
+    }
+  }
+
+  handleAbsenMasuk(
+      String id, String jadwal, String keterangan, XFile? file) async {
     if (GlobalData.globalKoneksi == Koneksi.online) {
       OnlineAbsensiService serviceOnline = OnlineAbsensiService();
       await serviceOnline.simpanAbsenMasuk(
         keterangan: keterangan,
         idShift: id,
         jamKerja: jadwal,
+        file: file,
       );
     } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
       await serviceAbsensi.simpanAbsenMasuk(

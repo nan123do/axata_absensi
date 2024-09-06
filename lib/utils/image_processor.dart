@@ -66,8 +66,25 @@ class ImageProcessor {
   // Fungsi utilitas untuk mengambil CameraImage, mengonversinya menjadi format gambar, menyimpannya sebagai file, dan mengubahnya menjadi XFile
   Future<XFile> saveImageFromCamera(CameraImage image, String filename) async {
     Uint8List imageBytes = convertYUV420toImage(image);
-    File file = await saveBytesToFile(imageBytes, filename);
-    XFile xFile = XFile(file.path);
-    return xFile;
+    // Decode Uint8List menjadi gambar menggunakan package image
+    imglib.Image? decodedImage = imglib.decodeImage(imageBytes);
+
+    // Lakukan rotasi gambar 90 derajat ke kanan
+    if (decodedImage != null) {
+      imglib.Image rotatedImage = imglib.copyRotate(decodedImage, angle: 90);
+
+      // Encode ulang gambar yang sudah dirotasi ke dalam format byte
+      Uint8List rotatedImageBytes =
+          Uint8List.fromList(imglib.encodeJpg(rotatedImage));
+
+      // Simpan gambar yang telah dirotasi ke dalam file
+      File file = await saveBytesToFile(rotatedImageBytes, filename);
+
+      // Kembalikan file yang disimpan sebagai XFile
+      XFile xFile = XFile(file.path);
+      return xFile;
+    } else {
+      throw Exception('Gagal memproses gambar');
+    }
   }
 }

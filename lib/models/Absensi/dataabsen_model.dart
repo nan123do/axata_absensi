@@ -41,6 +41,7 @@ class DataAbsenModel {
   late String idShift;
   late String namaShift;
   late String jamKerja;
+  late String foto;
 
   DataAbsenModel({
     required this.id,
@@ -56,6 +57,7 @@ class DataAbsenModel {
     required this.idShift,
     required this.namaShift,
     required this.jamKerja,
+    required this.foto,
   });
 
   DataAbsenModel.fromJson(Map<String, dynamic> json) {
@@ -72,6 +74,7 @@ class DataAbsenModel {
     idShift = json['idShift'];
     namaShift = json['namaShift'] ?? '';
     jamKerja = json['jamKerja'];
+    foto = json['foto'] ?? '638609715229378432.jpg';
   }
 
   DataAbsenModel.fromOnlineJson(Map<String, dynamic> json) {
@@ -95,6 +98,7 @@ class DataAbsenModel {
     idShift = shift['id'].toString();
     namaShift = shift['nama'] ?? '';
     jamKerja = json['jam_kerja'];
+    foto = json['foto'] ?? '';
   }
 
   Map<String, dynamic> toJson() {
@@ -112,6 +116,7 @@ class DataAbsenModel {
       'idShift': idShift,
       'namaShift': namaShift,
       'jamKerja': jamKerja,
+      'foto': foto,
     };
   }
 }
