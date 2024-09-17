@@ -13,4 +13,12 @@ class PegawaiData {
   static String namajabatan = '';
   static String menuakses = '';
   static String tokenAuth = '';
+
+  static bool isNando() {
+    return nama.toLowerCase().contains('nando');
+  }
+
+  static bool isNotNando() {
+    return !(nama.toLowerCase().contains('nando'));
+  }
 }

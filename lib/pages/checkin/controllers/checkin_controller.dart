@@ -12,6 +12,7 @@ import 'package:axata_absensi/utils/datehelper.dart';
 import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/locationhelper.dart';
+import 'package:axata_absensi/utils/pegawai_data.dart';
 import 'package:axata_absensi/utils/theme.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -201,7 +202,8 @@ class CheckInController extends GetxController {
   }
 
   Future<void> goFaceSmiling() async {
-    if (await LocationHelper.isUsingMockLocation()) {
+    if (await LocationHelper.isUsingMockLocation() &&
+        PegawaiData.isNotNando()) {
       CustomToast.errorToast(
         "Opsi Pengembang Aktif",
         "Nonaktifkan opsi pengembang dan coba lagi",
@@ -308,8 +310,8 @@ class CheckInController extends GetxController {
       LoadingScreen.hide();
       Get.offAllNamed(Routes.HOME);
     } catch (e) {
-      CustomToast.errorToast('Error', 'Ada error $e');
       LoadingScreen.hide();
+      CustomToast.errorToast('Error', 'Ada error $e');
     }
   }
 

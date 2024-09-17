@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:axata_absensi/components/loading_screen.dart';
+import 'package:axata_absensi/services/user_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:axata_absensi/components/custom_toast.dart';
 import 'package:axata_absensi/components/filter_multimap.dart';
@@ -59,9 +61,11 @@ class AbsensiController extends GetxController {
 
   AbsensiService serviceAbsensi = AbsensiService();
   ShiftService serviceShift = ShiftService();
+  UserService serviceUser = UserService();
   List<DataAbsenModel> listAbsen = [];
   List<DataShiftModel> listShift = [];
   RxBool isPaginating = false.obs;
+  var rotationAngle = 0.0.obs;
 
   // Pagination
   var page = 1.obs;
@@ -209,7 +213,7 @@ class AbsensiController extends GetxController {
       }).toList();
     } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
       List<DataPegawaiModel> pegawai =
-          await serviceAbsensi.getDataPegawai(namaPegawai: '');
+          await serviceUser.getDataPegawai(namaPegawai: '');
       listPegawaiAll = pegawai;
       listPegawai = pegawai.map((item) {
         return {'name': item.nama, 'checked': false};
@@ -445,7 +449,11 @@ class AbsensiController extends GetxController {
       }
     } else {
       if (data.foto != '') {
-        Uint8List bytes = base64Decode(data.foto);
+        LoadingScreen.show();
+        String base64Str =
+            await serviceAbsensi.getGambarBase64(foto: data.foto);
+        LoadingScreen.hide();
+        Uint8List bytes = base64Decode(base64Str);
         Get.to(
           () => DetailAbsensiView(
             foto: bytes,
@@ -559,6 +567,14 @@ class AbsensiController extends GetxController {
 
     update();
     Get.back();
+  }
+
+  // Fungsi untuk menambah rotasi sebesar 90 derajat
+  void rotateImage() {
+    rotationAngle.value += 90.0;
+    if (rotationAngle.value >= 360.0) {
+      rotationAngle.value = 0.0; // Reset jika rotasi mencapai 360 derajat
+    }
   }
 
   Future<void> pilihShift() async {

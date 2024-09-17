@@ -99,32 +99,66 @@ class DetailAbsensiView extends GetView<AbsensiController> {
             ],
           ),
           SizedBox(height: 36.h),
-          Container(
-            width: double.infinity,
-            height: 0.65.sh,
-            padding: EdgeInsets.all(60.r),
-            margin: EdgeInsets.symmetric(horizontal: 60.w),
-            alignment: Alignment.center,
-            decoration: handleImage(),
-            child: handleChild(),
-          ),
-          const Spacer(),
-          GestureDetector(
-            onTap: () => Get.back(),
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                vertical: 30.h,
-              ),
-              margin: EdgeInsets.symmetric(horizontal: 60.w),
-              alignment: Alignment.center,
-              decoration: AxataTheme.styleGradientUD,
-              child: Text(
-                'Kembali',
-                style: AxataTheme.fiveMiddle.copyWith(
-                  color: AxataTheme.white,
-                ),
+          Obx(
+            () => Transform.rotate(
+              angle: controller.rotationAngle.value *
+                  3.14159 /
+                  180, // Rotasi dalam radian
+              child: Container(
+                width: double.infinity,
+                height: 0.65.sh,
+                padding: EdgeInsets.all(60.r),
+                margin: EdgeInsets.symmetric(horizontal: 60.w),
+                alignment: Alignment.center,
+                decoration: handleImage(),
+                child: handleChild(),
               ),
             ),
+          ),
+          const Spacer(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: controller.rotateImage, // Tombol untuk rotate
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 30.h,
+                    ),
+                    margin: EdgeInsets.only(left: 60.w),
+                    alignment: Alignment.center,
+                    decoration: AxataTheme.styleGradientUD,
+                    child: Text(
+                      'Rotate',
+                      style: AxataTheme.fiveMiddle.copyWith(
+                        color: AxataTheme.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 40.w),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => Get.back(),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 30.h,
+                    ),
+                    margin: EdgeInsets.only(right: 60.w),
+                    alignment: Alignment.center,
+                    decoration: AxataTheme.styleGradientUD,
+                    child: Text(
+                      'Kembali',
+                      style: AxataTheme.fiveMiddle.copyWith(
+                        color: AxataTheme.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 50.h),
         ],

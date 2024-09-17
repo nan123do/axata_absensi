@@ -71,7 +71,7 @@ class ImageProcessor {
 
     // Lakukan rotasi gambar 90 derajat ke kanan
     if (decodedImage != null) {
-      imglib.Image rotatedImage = imglib.copyRotate(decodedImage, angle: 90);
+      imglib.Image rotatedImage = imglib.copyRotate(decodedImage, angle: -90);
 
       // Encode ulang gambar yang sudah dirotasi ke dalam format byte
       Uint8List rotatedImageBytes =

@@ -3,6 +3,7 @@ import 'package:axata_absensi/models/Pegawai/datapegawai_model.dart';
 import 'package:axata_absensi/pages/pegawai/views/save_pegawai.dart';
 import 'package:axata_absensi/pages/pegawai/views/ubah_password.dart';
 import 'package:axata_absensi/services/online/online_user_service.dart';
+import 'package:axata_absensi/services/user_service.dart';
 import 'package:axata_absensi/utils/datehelper.dart';
 import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
@@ -25,6 +26,8 @@ class PegawaiController extends GetxController {
   Rx<DateTime> dateMasuk = DateTime.now().obs;
   RxString id = ''.obs;
 
+  UserService serviceUser = UserService();
+
   @override
   void onInit() {
     super.onInit();
@@ -46,7 +49,9 @@ class PegawaiController extends GetxController {
     if (GlobalData.globalKoneksi == Koneksi.online) {
       OnlineUserService serviceOnline = OnlineUserService();
       listPegawai = await serviceOnline.getDataPegawai();
-    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {}
+    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+      listPegawai = await serviceUser.getDataPegawai(namaPegawai: '');
+    }
   }
 
   void goDialog(DataPegawaiModel data) {

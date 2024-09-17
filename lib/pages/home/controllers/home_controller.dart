@@ -313,12 +313,12 @@ class HomeController extends GetxController {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
       }
-
       if (permission == LocationPermission.denied) {
         CustomToast.errorToast("Error", "Aktifkan izin lokasi");
         lanjutCheckin = false;
         return;
-      } else if (await LocationHelper.isUsingMockLocation()) {
+      } else if (await LocationHelper.isUsingMockLocation() &&
+          PegawaiData.isNotNando()) {
         CustomToast.errorToast("Opsi Pengembang Aktif",
             "Nonaktifkan opsi pengembang dan coba lagi");
         lanjutCheckin = false;

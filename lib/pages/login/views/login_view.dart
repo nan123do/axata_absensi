@@ -20,15 +20,15 @@ class LoginView extends GetView<LoginController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Text(
-                'Cloud Id',
-                style: AxataTheme.threeSmall,
-              ),
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
+            // Center(
+            //   child: Text(
+            //     'Cloud Id',
+            //     style: AxataTheme.threeSmall,
+            //   ),
+            // ),
+            // SizedBox(
+            //   height: 20.h,
+            // ),
             GestureDetector(
               onTap: () => Get.toNamed(Routes.IDCLOUD),
               child: Obx(
@@ -236,7 +236,7 @@ class LoginView extends GetView<LoginController> {
             bottom: 0,
             child: Container(
               width: 1.sw,
-              padding: EdgeInsets.only(top: 40.h),
+              padding: EdgeInsets.only(top: 40.h, left: 100.w, right: 100.w),
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: AxataTheme.white,
@@ -295,7 +295,36 @@ class LoginView extends GetView<LoginController> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 60.h)
+                  SizedBox(height: 30.h),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     Text(
+                  //       'Belum punya akun?',
+                  //     ),
+                  //     SizedBox(width: 10.w),
+                  //     Text(
+                  //       'Belum punya akun?',
+                  //     ),
+                  //   ],
+                  // ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Belum punya akun ?',
+                        style: AxataTheme.oneSmall,
+                      ),
+                      SizedBox(width: 20.w),
+                      Text(
+                        'DAFTAR DISINI',
+                        style: AxataTheme.oneBold.copyWith(
+                          color: AxataTheme.mainColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 30.h),
                 ],
               ),
             ),

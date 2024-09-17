@@ -74,7 +74,7 @@ class DataAbsenModel {
     idShift = json['idShift'];
     namaShift = json['namaShift'] ?? '';
     jamKerja = json['jamKerja'];
-    foto = json['foto'] ?? '638609715229378432.jpg';
+    foto = json['foto'] ?? '';
   }
 
   DataAbsenModel.fromOnlineJson(Map<String, dynamic> json) {
