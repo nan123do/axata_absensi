@@ -1,5 +1,6 @@
 import 'package:axata_absensi/pages/login/controllers/login_controller.dart';
 import 'package:axata_absensi/routes/app_pages.dart';
+import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -206,6 +207,32 @@ class LoginView extends GetView<LoginController> {
       );
     }
 
+    Widget lupaPasswordWidget() {
+      if (GlobalData.isKoneksiOnline()) {
+        if (GlobalData.tipeLogin == 'karyawan') {
+          return Center(
+            child: Text(
+              'Lupa Password?  hubungi Admin perusahaan',
+              style: AxataTheme.oneSmall,
+            ),
+          );
+        } else {
+          return GestureDetector(
+            onTap: () => Get.toNamed(Routes.LUPAPASSWORD),
+            child: Center(
+              child: Text(
+                'Lupa Password?',
+                style:
+                    AxataTheme.oneSmall.copyWith(color: AxataTheme.mainColor),
+              ),
+            ),
+          );
+        }
+      }
+
+      return Container();
+    }
+
     return Scaffold(
       // resizeToAvoidBottomInset: false,
       backgroundColor: AxataTheme.white,
@@ -226,6 +253,18 @@ class LoginView extends GetView<LoginController> {
             ),
           ),
           Positioned(
+            top: 160.h,
+            left: 80.h,
+            child: GestureDetector(
+              onTap: () => Get.toNamed(Routes.WELCOME),
+              child: FaIcon(
+                FontAwesomeIcons.angleLeft,
+                size: 80.r,
+                color: AxataTheme.white,
+              ),
+            ),
+          ),
+          Positioned(
             top: 0.07.sh,
             child: Image.asset(
               'assets/image/vector_login.png',
@@ -233,7 +272,7 @@ class LoginView extends GetView<LoginController> {
             ),
           ),
           Positioned(
-            bottom: 0,
+            bottom: GlobalData.isKoneksiOnline() ? 100 : 0,
             child: Container(
               width: 1.sw,
               padding: EdgeInsets.only(top: 40.h, left: 100.w, right: 100.w),
@@ -247,11 +286,21 @@ class LoginView extends GetView<LoginController> {
                 children: [
                   Text(
                     'Login',
-                    style: AxataTheme.twoBold,
+                    style: AxataTheme.twoBold.copyWith(
+                      color: AxataTheme.mainColor,
+                    ),
                   ),
                   SizedBox(height: 16.h),
-                  buttonCloudId(),
-                  SizedBox(height: 60.h),
+                  Visibility(
+                    visible: !GlobalData.isKoneksiOnline(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        buttonCloudId(),
+                        SizedBox(height: 60.h),
+                      ],
+                    ),
+                  ),
                   usernameWidget(),
                   SizedBox(height: 12.h),
                   passwordWidget(),
@@ -296,35 +345,7 @@ class LoginView extends GetView<LoginController> {
                     ),
                   ),
                   SizedBox(height: 30.h),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: [
-                  //     Text(
-                  //       'Belum punya akun?',
-                  //     ),
-                  //     SizedBox(width: 10.w),
-                  //     Text(
-                  //       'Belum punya akun?',
-                  //     ),
-                  //   ],
-                  // ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Belum punya akun ?',
-                        style: AxataTheme.oneSmall,
-                      ),
-                      SizedBox(width: 20.w),
-                      Text(
-                        'DAFTAR DISINI',
-                        style: AxataTheme.oneBold.copyWith(
-                          color: AxataTheme.mainColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 30.h),
+                  lupaPasswordWidget(),
                 ],
               ),
             ),

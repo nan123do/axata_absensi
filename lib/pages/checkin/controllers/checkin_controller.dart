@@ -4,10 +4,13 @@ import 'dart:math';
 import 'package:axata_absensi/components/custom_toast.dart';
 import 'package:axata_absensi/components/loading_screen.dart';
 import 'package:axata_absensi/models/Shift/datashift_model.dart';
+import 'package:axata_absensi/models/lokasi/lokasi_model.dart';
+import 'package:axata_absensi/pages/checkin/views/checkin_lokasi_view.dart';
 import 'package:axata_absensi/pages/home/controllers/home_controller.dart';
 import 'package:axata_absensi/routes/app_pages.dart';
 import 'package:axata_absensi/services/absensi_service.dart';
 import 'package:axata_absensi/services/online/online_absensi_service.dart';
+import 'package:axata_absensi/services/online/online_lokasi_service.dart';
 import 'package:axata_absensi/utils/datehelper.dart';
 import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
@@ -18,6 +21,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -28,10 +32,18 @@ class CheckInController extends GetxController {
   RxBool isLoading = false.obs;
   RxBool isLoadingDistance = false.obs;
   RxString officeDistance = "-".obs;
+  RxString locationNow = "".obs;
   late GoogleMapController mapController;
   late Position currentPosition;
   Timer? timer;
   AbsensiService serviceAbsensi = AbsensiService();
+
+  List<DataLokasiModel> listLokasi = [];
+  RxMap<String, String> lokasi = <String, String>{
+    'nama': '',
+    'alamat': '',
+  }.obs;
+  RxMap<String, dynamic> office = <String, dynamic>{}.obs;
 
   @override
   void onInit() {
@@ -40,13 +52,43 @@ class CheckInController extends GetxController {
     getInit();
 
     timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if(!PegawaiData.isAdmin){
+
       getDistanceToOffice();
+      }
     });
   }
 
   getInit() async {
     try {
       await getCurrentLocation();
+      await handleDataLokasi();
+      if (listLokasi.isEmpty) {
+        CustomToast.errorToast("Error", 'Lokasi Masih Kosong');
+        office.value = Map<String, dynamic>.from(GlobalData.office);
+      } else {
+        int index = listLokasi.indexWhere(
+          (e) =>
+              e.nama == GlobalData.lokasi['nama'] &&
+              e.id == GlobalData.lokasi['id'],
+        );
+        if (index == -1) {
+          var loc = listLokasi[0];
+          lokasi.value = {
+            'id': loc.id,
+            'nama': loc.nama,
+            'alamat': loc.alamat,
+          };
+          office.value = Map<String, dynamic>.from({
+            'latitude': double.parse(loc.latitude),
+            'longitude': double.parse(loc.longitude),
+            'radius': double.parse(loc.radius),
+          });
+        } else {
+          lokasi.value = GlobalData.lokasi;
+          office.value = Map<String, dynamic>.from(GlobalData.office);
+        }
+      }
     } catch (e) {
       CustomToast.errorToast("Error", e.toString());
     } finally {
@@ -57,6 +99,14 @@ class CheckInController extends GetxController {
   Future<void> getCurrentLocation() async {
     Map<String, dynamic> data = await determinePosition();
     currentPosition = data['position'];
+
+    // Konversi posisi ke alamat
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+        currentPosition.latitude, currentPosition.longitude);
+    String address =
+        "${placemarks.first.street}, ${placemarks.first.subLocality}, ${placemarks.first.locality}";
+    locationNow.value = address;
+
     update();
   }
 
@@ -123,8 +173,8 @@ class CheckInController extends GetxController {
     if (!positionDetermine["error"]) {
       Position position = positionDetermine["position"];
       double distance = Geolocator.distanceBetween(
-        GlobalData.office['latitude'],
-        GlobalData.office['longitude'],
+        office['latitude'],
+        office['longitude'],
         position.latitude,
         position.longitude,
       );
@@ -181,8 +231,8 @@ class CheckInController extends GetxController {
     final GoogleMapController controller = mapController;
     CameraPosition goOffice = CameraPosition(
       target: LatLng(
-        GlobalData.office['latitude'],
-        GlobalData.office['longitude'],
+        office['latitude'],
+        office['longitude'],
       ),
       zoom: 20,
     );
@@ -218,9 +268,43 @@ class CheckInController extends GetxController {
     if (officeDistance.value == 'Didalam Area') {
       Get.toNamed(Routes.SMILEFACE);
     } else {
-      CustomToast.errorToast("Error", "Anda masih berada diluar kantor");
-      Get.toNamed(Routes.SMILEFACE);
+      if (GlobalData.isTestMode) {
+        Get.toNamed(Routes.SMILEFACE);
+      } else {
+        CustomToast.errorToast("Error", "Anda masih berada diluar kantor");
+      }
     }
+  }
+
+  handleDataLokasi() async {
+    if (GlobalData.globalKoneksi == Koneksi.online) {
+      OnlineLokasiService serviceOnline = OnlineLokasiService();
+      listLokasi = await serviceOnline.getDatalokasi();
+    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {}
+  }
+
+  handlePilihLokasi(DataLokasiModel data) {
+    Get.back();
+    lokasi.value = {
+      'id': data.id,
+      'nama': data.nama,
+      'alamat': data.alamat,
+    };
+    office.value = Map<String, dynamic>.from({
+      'latitude': double.parse(data.latitude),
+      'longitude': double.parse(data.longitude),
+      'radius': double.parse(data.radius),
+    });
+  }
+
+  goPilihLokasi() async {
+    Get.to(
+      () => CheckInLokasi(
+        controller: this,
+        lokasi: lokasi,
+      ),
+      transition: Transition.rightToLeftWithFade,
+    );
   }
 
   Future<void> simpanCheckIn({XFile? file}) async {

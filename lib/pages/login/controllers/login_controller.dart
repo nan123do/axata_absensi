@@ -8,6 +8,7 @@ import 'package:axata_absensi/utils/connectivity_checker.dart';
 import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/koneksi_helper.dart';
+import 'package:axata_absensi/utils/pegawai_data.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -94,7 +95,11 @@ class LoginController extends GetxController {
 
           bool hasil = await handleLogin(GlobalData.globalKoneksi);
           if (hasil) {
-            Get.offAllNamed(Routes.HOME);
+            if (PegawaiData.statusAktif) {
+              Get.offAllNamed(Routes.HOME);
+            } else {
+              CustomToast.errorToast('Error', 'Tot');
+            }
           }
         } catch (e) {
           CustomToast.errorToast(

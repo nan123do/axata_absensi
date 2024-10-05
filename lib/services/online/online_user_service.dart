@@ -197,7 +197,8 @@ class OnlineUserService {
 
   Future<String> ubahPassword({
     required String id,
-    required String password,
+    required String oldpassword,
+    required String newpassword,
   }) async {
     try {
       var url = Uri.http(
@@ -209,7 +210,8 @@ class OnlineUserService {
         url,
         body: {
           "id_user": id,
-          "password": password,
+          "old_password": oldpassword,
+          "new_password": newpassword,
         },
         headers: {
           'Authorization': PegawaiData.tokenAuth,

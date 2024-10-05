@@ -1,6 +1,5 @@
 import 'package:axata_absensi/components/small_loading.dart';
 import 'package:axata_absensi/pages/checkin/controllers/checkin_controller.dart';
-import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -46,11 +45,9 @@ class CheckInView extends GetView<CheckInController> {
                       },
                       polygons: {
                         controller.createRadiusPolygon(
-                          LatLng(
-                            GlobalData.office['latitude'],
-                            GlobalData.office['longitude'],
-                          ),
-                          double.parse(GlobalData.office['radius'].toString()),
+                          LatLng(controller.office['latitude'],
+                              controller.office['longitude']),
+                          controller.office['radius'],
                         ),
                       },
                     ),
@@ -112,28 +109,46 @@ class CheckInView extends GetView<CheckInController> {
                               color: AxataTheme.mainColor,
                             ),
                             SizedBox(width: 24.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () => controller.goToOffice(),
-                                    child: Text(
-                                      GlobalData.namatoko,
-                                      style: AxataTheme.oneBold.copyWith(
-                                        color: AxataTheme.mainColor,
+                            Obx(
+                              () => Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () => controller.goToOffice(),
+                                      child: Text(
+                                        controller.lokasi['nama']!,
+                                        style: AxataTheme.oneBold.copyWith(
+                                          color: AxataTheme.mainColor,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Text(
-                                    GlobalData.alamattoko,
-                                    style: AxataTheme.fourSmall,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                  ),
-                                ],
+                                    Text(
+                                      controller.lokasi['alamat']!,
+                                      style: AxataTheme.fourSmall,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                    ),
+                                  ],
+                                ),
                               ),
-                            )
+                            ),
+                            GestureDetector(
+                              onTap: () => controller.goPilihLokasi(),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 20.w,
+                                  vertical: 20.h,
+                                ),
+                                decoration: AxataTheme.styleGradientUD,
+                                child: Text(
+                                  'Ubah Lokasi',
+                                  style: AxataTheme.fourSmall.copyWith(
+                                    color: AxataTheme.white,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                         SizedBox(height: 12.h),
@@ -149,11 +164,13 @@ class CheckInView extends GetView<CheckInController> {
                               color: AxataTheme.mainColor,
                             ),
                             SizedBox(width: 24.w),
-                            Text(
-                              '${controller.currentPosition.longitude.toString()}, ${controller.currentPosition.latitude.toString()}',
-                              style: AxataTheme.fourSmall,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
+                            Obx(
+                              () => Text(
+                                controller.locationNow.value,
+                                style: AxataTheme.fourSmall,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
                             ),
                           ],
                         ),

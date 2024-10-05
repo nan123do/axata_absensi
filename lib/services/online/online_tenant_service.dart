@@ -43,6 +43,8 @@ class OnlineTenantService {
     required String username,
     required String email,
     required String firstname,
+    required String password,
+    required String telp,
   }) async {
     try {
       var url = Uri.http(
@@ -58,6 +60,8 @@ class OnlineTenantService {
           "username": username,
           "email": email,
           "first_name": firstname,
+          "password": password,
+          "telp": telp,
         },
         headers: {
           'Authorization': PegawaiData.tokenAuth,

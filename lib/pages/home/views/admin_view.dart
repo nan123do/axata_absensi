@@ -69,7 +69,9 @@ class AdminHomePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(40.r),
                     ),
                     child: Wrap(
-                      alignment: WrapAlignment.spaceBetween,
+                      runSpacing: 40.r,
+                      spacing: 30.r,
+                      alignment: WrapAlignment.spaceEvenly,
                       children: [
                         ListMenuAdmin(
                           title: 'Jam Kerja',
@@ -94,6 +96,30 @@ class AdminHomePage extends StatelessWidget {
                           icon: FontAwesomeIcons.cog,
                           color: AxataTheme.grey,
                           onTap: () => Get.toNamed(Routes.SETTING),
+                        ),
+                        ListMenuAdmin(
+                          title: 'Lokasi',
+                          icon: FontAwesomeIcons.mapPin,
+                          color: AxataTheme.mainColor,
+                          onTap: () => Get.toNamed(Routes.LOKASI),
+                        ),
+                        ListMenuAdmin(
+                          title: '',
+                          icon: FontAwesomeIcons.mapPin,
+                          color: AxataTheme.mainColor,
+                          onTap: () {},
+                        ),
+                        ListMenuAdmin(
+                          title: '',
+                          icon: FontAwesomeIcons.mapPin,
+                          color: AxataTheme.mainColor,
+                          onTap: () {},
+                        ),
+                        ListMenuAdmin(
+                          title: '',
+                          icon: FontAwesomeIcons.mapPin,
+                          color: AxataTheme.mainColor,
+                          onTap: () {},
                         ),
                       ],
                     ),
@@ -124,6 +150,9 @@ class ListMenuAdmin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (title == '') {
+      return SizedBox(width: 150.w);
+    }
     return GestureDetector(
       onTap: onTap,
       child: Column(

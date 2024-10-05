@@ -10,10 +10,18 @@ import 'package:axata_absensi/pages/idcloud/bindings/idcloud_binding.dart';
 import 'package:axata_absensi/pages/idcloud/views/idcloud_view.dart';
 import 'package:axata_absensi/pages/login/bindings/login_binding.dart';
 import 'package:axata_absensi/pages/login/views/login_view.dart';
+import 'package:axata_absensi/pages/lokasi/bindings/lokasi_binding.dart';
+import 'package:axata_absensi/pages/lokasi/views/lokasi_view.dart';
+import 'package:axata_absensi/pages/lupapassword/bindings/lupapassword_binding.dart';
+import 'package:axata_absensi/pages/lupapassword/views/lupapassword_view.dart';
 import 'package:axata_absensi/pages/pegawai/bindings/pegawai_binding.dart';
 import 'package:axata_absensi/pages/pegawai/views/pegawai_view.dart';
 import 'package:axata_absensi/pages/profile/bindings/profile_binding.dart';
 import 'package:axata_absensi/pages/profile/views/profile_view.dart';
+import 'package:axata_absensi/pages/register/bindings/register_binding.dart';
+import 'package:axata_absensi/pages/register/views/register_view.dart';
+import 'package:axata_absensi/pages/registrasi/bindings/registrasi_binding.dart';
+import 'package:axata_absensi/pages/registrasi/views/registrasi_view.dart';
 import 'package:axata_absensi/pages/setting/bindings/setting_binding.dart';
 import 'package:axata_absensi/pages/setting/views/setting_view.dart';
 import 'package:axata_absensi/pages/shift/bindings/shift_binding.dart';
@@ -26,6 +34,8 @@ import 'package:axata_absensi/pages/tenant/bindings/tenant_binding.dart';
 import 'package:axata_absensi/pages/tenant/views/tenant_view.dart';
 import 'package:axata_absensi/pages/test/bindings/test_binding.dart';
 import 'package:axata_absensi/pages/test/views/test_view.dart';
+import 'package:axata_absensi/pages/welcome/bindings/welcome_binding.dart';
+import 'package:axata_absensi/pages/welcome/views/welcome_view.dart';
 import 'package:get/get.dart';
 
 part 'app_routes.dart';
@@ -41,6 +51,12 @@ class AppPages {
       transition: Transition.fadeIn,
     ),
     GetPage(
+      name: _Paths.WELCOME,
+      page: () => WelcomeView(),
+      binding: WelcomeBinding(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
       name: _Paths.TEST,
       page: () => TestView(),
       binding: TestBinding(),
@@ -50,6 +66,20 @@ class AppPages {
       name: _Paths.LOGIN,
       page: () => LoginView(),
       binding: LoginBinding(),
+      transition: Transition.fadeIn,
+      transitionDuration: Duration(milliseconds: 500),
+    ),
+    GetPage(
+      name: _Paths.REGISTER,
+      page: () => RegisterView(),
+      binding: RegisterBinding(),
+      transition: Transition.fadeIn,
+      transitionDuration: Duration(milliseconds: 500),
+    ),
+    GetPage(
+      name: _Paths.LUPAPASSWORD,
+      page: () => LupaPasswordView(),
+      binding: LupaPasswordBinding(),
       transition: Transition.fadeIn,
       transitionDuration: Duration(milliseconds: 500),
     ),
@@ -97,6 +127,12 @@ class AppPages {
       transition: Transition.rightToLeftWithFade,
     ),
     GetPage(
+      name: _Paths.LOKASI,
+      page: () => LokasiView(),
+      binding: LokasiBinding(),
+      transition: Transition.rightToLeftWithFade,
+    ),
+    GetPage(
       name: _Paths.SETTING,
       page: () => SettingView(),
       binding: SettingBinding(),
@@ -112,6 +148,12 @@ class AppPages {
       name: _Paths.TENANT,
       page: () => TenantView(),
       binding: TenantBinding(),
+      transition: Transition.rightToLeftWithFade,
+    ),
+    GetPage(
+      name: _Paths.REGISTRASI,
+      page: () => RegistrasiView(),
+      binding: RegistrasiBinding(),
       transition: Transition.rightToLeftWithFade,
     ),
   ];

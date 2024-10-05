@@ -4,7 +4,6 @@ import 'package:axata_absensi/pages/idcloud/controllers/idcloud_controller.dart'
 import 'package:axata_absensi/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class IdCloudView extends GetView<IdCloudController> {
@@ -23,40 +22,6 @@ class IdCloudView extends GetView<IdCloudController> {
       ),
       body: Column(
         children: [
-          SizedBox(height: 24.h),
-          Row(
-            children: [
-              SizedBox(width: 60.w),
-              GestureDetector(
-                onTap: () => controller.openModalFilterJenis(context),
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 40.w,
-                    vertical: 20.h,
-                  ),
-                  decoration: AxataTheme.styleUnselectBoxFilter,
-                  child: Row(
-                    children: [
-                      FaIcon(
-                        FontAwesomeIcons.filter,
-                        color: AxataTheme.mainColor,
-                        size: 30.r,
-                      ),
-                      SizedBox(
-                        width: 20.w,
-                      ),
-                      Text(
-                        'Filter',
-                        style: AxataTheme.oneSmall.copyWith(
-                          color: AxataTheme.mainColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
           SizedBox(height: 24.h),
           Obx(
             () => Expanded(

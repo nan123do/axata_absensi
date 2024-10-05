@@ -1,6 +1,8 @@
 import 'package:axata_absensi/components/custom_appbar.dart';
 import 'package:axata_absensi/components/loading.dart';
 import 'package:axata_absensi/pages/pegawai/controllers/pegawai_controller.dart';
+import 'package:axata_absensi/utils/enums.dart';
+import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,18 +18,20 @@ class PegawaiView extends GetView<PegawaiController> {
       resizeToAvoidBottomInset: false,
       appBar: const CustomAppBar(title: 'Data Pegawai'),
       backgroundColor: AxataTheme.bgGrey,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => controller.goAddPage(),
-        backgroundColor: AxataTheme.mainColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(30.r),
-          ),
-        ),
-        child: const FaIcon(
-          FontAwesomeIcons.plus,
-        ),
-      ),
+      floatingActionButton: GlobalData.globalKoneksi == Koneksi.online
+          ? FloatingActionButton(
+              onPressed: () => controller.goAddPage(),
+              backgroundColor: AxataTheme.mainColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(30.r),
+                ),
+              ),
+              child: const FaIcon(
+                FontAwesomeIcons.plus,
+              ),
+            )
+          : Container(),
       body: Obx(
         () => controller.isLoading.value
             ? const LoadingPage()
@@ -60,7 +64,11 @@ class PegawaiView extends GetView<PegawaiController> {
                       itemBuilder: (context, index) {
                         final data = controller.listPegawai[index];
                         return GestureDetector(
-                          onLongPress: () => controller.goDialog(data),
+                          onLongPress: () {
+                            if (GlobalData.globalKoneksi == Koneksi.online) {
+                              controller.goDialog(data);
+                            }
+                          },
                           child: Container(
                             padding: EdgeInsets.symmetric(
                               horizontal: 60.w,

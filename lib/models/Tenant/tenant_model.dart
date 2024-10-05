@@ -12,15 +12,13 @@ class DataTenantModel {
   DataTenantModel.fromJson(Map<String, dynamic> json) {
     id = json['id'].toString();
     nama = json['nama'];
-    nama = json['nama'];
     alamat = json['alamat'];
   }
 
   DataTenantModel.fromOnlineJson(Map<String, dynamic> json) {
     id = json['id'].toString();
     nama = json['nama'];
-    nama = json['nama'];
-    alamat = json['alamat'];
+    alamat = json['alamat'] ?? '';
   }
 
   Map<String, dynamic> toJson() {

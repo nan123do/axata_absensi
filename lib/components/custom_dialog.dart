@@ -116,4 +116,151 @@ class CustomAlertDialog {
       ),
     );
   }
+
+  static showInactiveAccountDialog({
+    required String title,
+    required String message,
+    required void Function() onResendEmail,
+    required void Function() onCancel,
+  }) {
+    Get.defaultDialog(
+      title: "",
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+      radius: 8,
+      titlePadding: EdgeInsets.zero,
+      titleStyle: const TextStyle(fontSize: 0),
+      content: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(bottom: 32, top: 24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: AxataTheme.fiveMiddle,
+                ),
+                SizedBox(height: 72.h),
+                FaIcon(
+                  FontAwesomeIcons.exclamationCircle,
+                  color: AxataTheme.yellow,
+                  size: 300.r,
+                ),
+                SizedBox(height: 72.h),
+                Text(
+                  message,
+                  style: AxataTheme.fiveMiddle,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 6,
+                  child: GestureDetector(
+                    onTap: onCancel,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 24.h),
+                      decoration: AxataTheme.styleRedGradientUD,
+                      alignment: Alignment.center,
+                      child: Text(
+                        "Tidak",
+                        style: AxataTheme.fiveMiddle.copyWith(
+                          color: AxataTheme.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  flex: 6,
+                  child: GestureDetector(
+                    onTap: onResendEmail, // Fungsi untuk resend email
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 24.h),
+                      decoration: AxataTheme.styleGradientUD,
+                      alignment: Alignment.center,
+                      child: Text(
+                        "Resend Email",
+                        style: AxataTheme.fiveMiddle.copyWith(
+                          color: AxataTheme.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  static showCloseDialog({
+    required String title,
+    required String message,
+    required void Function() onClose,
+  }) {
+    Get.defaultDialog(
+      barrierDismissible: false,
+      title: "",
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+      radius: 8,
+      titlePadding: EdgeInsets.zero,
+      titleStyle: const TextStyle(fontSize: 0),
+      content: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(bottom: 32, top: 24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: AxataTheme.fiveMiddle,
+                ),
+                SizedBox(height: 72.h),
+                FaIcon(
+                  FontAwesomeIcons.exclamationCircle,
+                  color: AxataTheme.yellow,
+                  size: 300.r,
+                ),
+                SizedBox(height: 72.h),
+                Text(
+                  message,
+                  style: AxataTheme.fiveMiddle,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: GestureDetector(
+              onTap: onClose,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 24.h),
+                decoration: AxataTheme.styleGradientUD,
+                alignment: Alignment.center,
+                child: Text(
+                  "Oke",
+                  style: AxataTheme.fiveMiddle.copyWith(
+                    color: AxataTheme.white,
+                  ),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
 }

@@ -27,7 +27,7 @@ class LoginService {
           PegawaiData.kodepegawai = data[0]['kodepegawai'] ?? '';
           PegawaiData.idjenisuser = data[0]['idjenisuser'] ?? '';
           PegawaiData.aksesdashboard = data[0]['aksesdashboard'] ?? false;
-          PegawaiData.statusaktif = data[0]['statusaktif'] ?? false;
+          PegawaiData.statusAktif = data[0]['statusaktif'] ?? false;
           PegawaiData.tgllahir = data[0]['tgllahir'] == ''
               ? DateTime.now()
               : DateHelper.convertStringToDateTime(data[0]['tgllahir']);

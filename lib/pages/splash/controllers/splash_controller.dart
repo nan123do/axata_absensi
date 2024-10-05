@@ -23,9 +23,10 @@ class SplashController extends GetxController {
       GlobalData.username = box.read('username') ?? GlobalData.username;
       GlobalData.password = box.read('password') ?? GlobalData.password;
       GlobalData.isLogin = box.read('islogin') ?? GlobalData.isLogin;
+      GlobalData.tipeLogin = box.read('tipeLogin') ?? GlobalData.tipeLogin;
       GlobalData.saveCredential =
           box.read('savecredential') ?? GlobalData.saveCredential;
-      String strKoneksi = box.read('koneksi') ?? 'axatapos';
+      String strKoneksi = box.read('koneksi') ?? 'online';
       GlobalData.globalKoneksi = KoneksiHelper.getKoneksi(strKoneksi);
       GlobalData.globalPort = KoneksiHelper.getPort(strKoneksi);
 
@@ -36,9 +37,16 @@ class SplashController extends GetxController {
     } catch (e) {
       CustomToast.errorToast("Error", e.toString());
     } finally {
-      await Future.delayed(const Duration(seconds: 2));
-      isLoading.value = false;
-      Get.offAllNamed(Routes.LOGIN);
+      bool welcomeScreen = box.read('welcome') ?? false;
+      if (welcomeScreen == false) {
+        await Future.delayed(const Duration(seconds: 2));
+        isLoading.value = false;
+        Get.offAllNamed(Routes.WELCOME);
+      } else {
+        await Future.delayed(const Duration(seconds: 2));
+        isLoading.value = false;
+        Get.offAllNamed(Routes.LOGIN);
+      }
     }
   }
 }

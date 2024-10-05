@@ -14,6 +14,7 @@ class AxataTheme {
   // Color
   static Color bgGrey = Color(0xffF5F5F5);
   static Color mainColor = Color(0xff11a9fd);
+  static Color mainColorS = Color(0xffE7F7FF);
   static Color white = Colors.white;
   static Color black = Color(0xff2c2c2c);
   static Color grey = Color(0xff3E3E3E);

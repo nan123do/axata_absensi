@@ -3,18 +3,69 @@ import 'package:axata_absensi/pages/profile/views/profile_view.dart';
 import 'package:axata_absensi/pages/setting/controllers/setting_controller.dart';
 import 'package:axata_absensi/pages/setting/views/location_setting.dart';
 import 'package:axata_absensi/pages/setting/views/smile_setting.dart';
+import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class SettingView extends GetView<SettingController> {
   const SettingView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Widget handleLokasi() {
+      if (GlobalData.globalKoneksi == Koneksi.online) {
+        return ListMenu(
+          title: 'Lokasi',
+          subtitle: GlobalData.alamattoko,
+          icon: FontAwesomeIcons.mapPin,
+          color: AxataTheme.mainColor,
+        );
+      } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+        return Obx(
+          () => ListMenu(
+            title: 'Lokasi',
+            subtitle: controller.location.value,
+            icon: FontAwesomeIcons.mapPin,
+            color: AxataTheme.mainColor,
+            ontap: () {
+              controller.getInit(type: 'location');
+              Get.to(
+                () => LocationSettingView(
+                  controller: controller,
+                ),
+              );
+            },
+          ),
+        );
+      }
+      return Container();
+    }
+
+    Widget handleLangganan() {
+      if (controller.isPending.isFalse) {
+        return ListMenu(
+          title: '-',
+          subtitle: 'Paket Berlangganan',
+          icon: FontAwesomeIcons.tags,
+          color: AxataTheme.mainColor,
+          ontap: () => controller.goPaketLangganan(),
+        );
+      } else {
+        return ListMenu(
+          title: 'Pending',
+          subtitle: 'Cek riwayat Pembelian',
+          icon: FontAwesomeIcons.tags,
+          color: AxataTheme.yellow,
+          ontap: () => controller.goPaketLangganan(),
+        );
+      }
+    }
+
     return Scaffold(
       backgroundColor: AxataTheme.bgGrey,
       body: Obx(
@@ -43,10 +94,26 @@ class SettingView extends GetView<SettingController> {
                     child: SizedBox(
                       width: 0.9.sw,
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Center(
+                            child: Text(
+                              'ADMIN',
+                              style: AxataTheme.twoBold.copyWith(
+                                color: AxataTheme.white,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 50.h),
                           Text(
-                            'ADMIN',
-                            style: AxataTheme.twoBold.copyWith(
+                            'Berlaku sampai : ${DateFormat('dd-MM-yyyy HH:mm').format(GlobalData.expiredAt)}',
+                            style: AxataTheme.threeSmall.copyWith(
+                              color: AxataTheme.white,
+                            ),
+                          ),
+                          Text(
+                            'Jumlah pegawai (${controller.listPegawai.length}/${GlobalData.maxPegawai})',
+                            style: AxataTheme.threeSmall.copyWith(
                               color: AxataTheme.white,
                             ),
                           ),
@@ -57,22 +124,7 @@ class SettingView extends GetView<SettingController> {
                             icon: FontAwesomeIcons.building,
                             color: AxataTheme.mainColor,
                           ),
-                          Obx(
-                            () => ListMenu(
-                              title: 'Lokasi',
-                              subtitle: controller.location.value,
-                              icon: FontAwesomeIcons.mapPin,
-                              color: AxataTheme.mainColor,
-                              ontap: () {
-                                controller.getInit(type: 'location');
-                                Get.to(
-                                  () => LocationSettingView(
-                                    controller: controller,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
+                          handleLokasi(),
                           ListMenu(
                             title: 'Senyum',
                             subtitle: 'Setting Senyum',
@@ -101,6 +153,7 @@ class SettingView extends GetView<SettingController> {
                             color: AxataTheme.mainColor,
                             ontap: () {},
                           ),
+                          handleLangganan(),
                         ],
                       ),
                     ),

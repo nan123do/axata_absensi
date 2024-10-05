@@ -38,8 +38,12 @@ class KoneksiHelper {
   static updateWs(Koneksi koneksi, String idcloud) {
     switch (koneksi) {
       case Koneksi.online:
-        GlobalData.globalAPI = idcloud;
-        GlobalData.globalWSApi = idcloud;
+        GlobalData.globalAPI = GlobalData.isTestMode
+            ? GlobalData.globalLocalAPI
+            : '167.71.194.195';
+        GlobalData.globalWSApi = GlobalData.isTestMode
+            ? GlobalData.globalLocalAPI
+            : '167.71.194.195';
       case Koneksi.axatapos:
         GlobalData.globalAPI = '157.245.206.185';
         GlobalData.globalWSApi = '157.245.206.185';

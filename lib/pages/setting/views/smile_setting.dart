@@ -106,13 +106,11 @@ class SmileSettingView extends StatelessWidget {
                             keyboardType: TextInputType.number,
                             style: AxataTheme.threeSmall,
                             decoration: InputDecoration.collapsed(
-                              hintText: 'Masukkan Radius',
+                              hintText: 'Masukkan Durasi Senyum',
                               hintStyle: AxataTheme.threeSmall.copyWith(
                                 color: Colors.black45,
                               ),
                             ),
-                            onChanged: (value) =>
-                                controller.updateRadius(value),
                           ),
                         ),
                         SizedBox(height: 72.h),

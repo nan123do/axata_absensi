@@ -171,50 +171,14 @@ class IdCloudController extends GetxController {
                 bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
               child: Container(
-                height: 0.35.sh,
+                height: 0.28.sh,
                 padding: EdgeInsets.symmetric(
                   horizontal: 60.w,
                   vertical: 40.h,
                 ),
                 child: Column(
                   children: [
-                    Obx(
-                      () => Container(
-                        alignment: Alignment.center,
-                        width: double.infinity,
-                        decoration: AxataTheme.styleUnselectBoxFilter.copyWith(
-                          color: AxataTheme.white,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Radio<String>(
-                              value: 'online',
-                              groupValue: selectedRadio.value,
-                              onChanged: (value) {
-                                selectedRadio.value = value!;
-                              },
-                            ),
-                            Text(
-                              'Online',
-                              style: AxataTheme.threeSmall,
-                            ),
-                            Radio<String>(
-                              value: 'remote',
-                              groupValue: selectedRadio.value,
-                              onChanged: (value) {
-                                selectedRadio.value = value!;
-                              },
-                            ),
-                            Text(
-                              'Remote',
-                              style: AxataTheme.threeSmall,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 24.h),
+                    SizedBox(height: 20.h),
                     ContainerInputAbsensi(
                       title: 'Nama Koneksi',
                       child: TextFormField(
@@ -265,9 +229,7 @@ class IdCloudController extends GetxController {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 20.h,
-                    ),
+                    SizedBox(height: 20.h),
                   ],
                 ),
               ),

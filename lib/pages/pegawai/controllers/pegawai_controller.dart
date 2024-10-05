@@ -1,4 +1,5 @@
 import 'package:axata_absensi/components/custom_toast.dart';
+import 'package:axata_absensi/components/loading_screen.dart';
 import 'package:axata_absensi/models/Pegawai/datapegawai_model.dart';
 import 'package:axata_absensi/pages/pegawai/views/save_pegawai.dart';
 import 'package:axata_absensi/pages/pegawai/views/ubah_password.dart';
@@ -207,6 +208,7 @@ class PegawaiController extends GetxController {
         return;
       }
 
+      LoadingScreen.show();
       if (isAdd) {
         if (passwordC.text == '') {
           errorSaveMesssage('Password harus diisi.');
@@ -223,9 +225,11 @@ class PegawaiController extends GetxController {
           return;
         }
         await handleTambahPegawai();
+        LoadingScreen.hide();
         Get.back();
         CustomToast.successToast('Success', 'Berhasil Menambah Pegawai');
       } else {
+        LoadingScreen.hide();
         await handleUbahPegawai();
         Get.back();
         CustomToast.successToast('Success', 'Berhasil Mengubah Pegawai');
@@ -297,7 +301,8 @@ class PegawaiController extends GetxController {
       OnlineUserService serviceOnline = OnlineUserService();
       await serviceOnline.ubahPassword(
         id: id.value,
-        password: passwordC.text,
+        oldpassword: '',
+        newpassword: passwordC.text,
       );
     } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {}
   }

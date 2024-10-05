@@ -41,7 +41,7 @@ class SuperUserPage extends StatelessWidget {
                     style: AxataTheme.twoBold.copyWith(color: AxataTheme.white),
                   ),
                   Text(
-                    "Axata Absensi0",
+                    "Axata Absensi",
                     style:
                         AxataTheme.fourSmall.copyWith(color: AxataTheme.white),
                     maxLines: 3,
@@ -68,13 +68,31 @@ class SuperUserPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(40.r),
                     ),
                     child: Wrap(
-                      alignment: WrapAlignment.spaceBetween,
+                      alignment: WrapAlignment.spaceEvenly,
                       children: [
                         ListMenuAdmin(
                           title: 'Penyewa',
                           icon: FontAwesomeIcons.building,
                           color: AxataTheme.mainColor,
                           onTap: () => Get.toNamed(Routes.TENANT),
+                        ),
+                        ListMenuAdmin(
+                          title: 'Registrasi',
+                          icon: FontAwesomeIcons.clipboardCheck,
+                          color: AxataTheme.mainColor,
+                          onTap: () => Get.toNamed(Routes.REGISTRASI),
+                        ),
+                        ListMenuAdmin(
+                          title: '',
+                          icon: FontAwesomeIcons.mapPin,
+                          color: AxataTheme.mainColor,
+                          onTap: () {},
+                        ),
+                        ListMenuAdmin(
+                          title: '',
+                          icon: FontAwesomeIcons.mapPin,
+                          color: AxataTheme.mainColor,
+                          onTap: () {},
                         ),
                       ],
                     ),
@@ -105,6 +123,9 @@ class ListMenuAdmin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (title == '') {
+      return SizedBox(width: 150.w);
+    }
     return GestureDetector(
       onTap: onTap,
       child: Column(

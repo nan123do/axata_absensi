@@ -67,6 +67,27 @@ class ProfileView extends GetView<ProfileController> {
                     icon: FontAwesomeIcons.star,
                   ),
                   SizedBox(height: 51.h),
+                  GestureDetector(
+                    onTap: () => controller.goUbahPassword(),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AxataTheme.white,
+                        borderRadius: BorderRadius.circular(40.r),
+                      ),
+                      child: ListTile(
+                        visualDensity: const VisualDensity(horizontal: -4),
+                        leading: FaIcon(
+                          FontAwesomeIcons.lockOpen,
+                          size: 60.r,
+                          color: AxataTheme.black,
+                        ),
+                        title: Text(
+                          'Ubah Password',
+                          style: AxataTheme.threeSmall,
+                        ),
+                      ),
+                    ),
+                  ),
                   Obx(
                     () => Container(
                       decoration: BoxDecoration(

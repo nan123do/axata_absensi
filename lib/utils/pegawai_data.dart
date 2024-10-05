@@ -1,9 +1,9 @@
 class PegawaiData {
   static String nama = '';
-  static String kodepegawai = '';
+  static String kodepegawai = ''; // sama dengan id kalau online
   static String idjenisuser = '';
   static bool aksesdashboard = false;
-  static bool statusaktif = true;
+  static bool statusAktif = false;
   static bool isAdmin = false;
   static bool isSuperUser = false;
   static DateTime tgllahir = DateTime.now();

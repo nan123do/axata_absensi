@@ -1,4 +1,6 @@
+import 'package:axata_absensi/components/custom_dialog.dart';
 import 'package:axata_absensi/components/custom_toast.dart';
+import 'package:axata_absensi/components/loading_screen.dart';
 import 'package:axata_absensi/models/Tenant/tenant_model.dart';
 import 'package:axata_absensi/pages/tenant/views/save_tenant.dart';
 import 'package:axata_absensi/services/online/online_tenant_service.dart';
@@ -15,10 +17,16 @@ class TenantController extends GetxController {
   TextEditingController usernameC = TextEditingController();
   TextEditingController emailC = TextEditingController();
   TextEditingController firstnameC = TextEditingController();
+  TextEditingController passwordC = TextEditingController();
+  TextEditingController passwordKC = TextEditingController();
+  TextEditingController telpC = TextEditingController();
 
   RxBool isLoading = false.obs;
   List<DataTenantModel> listTenant = [];
   RxString id = ''.obs;
+
+  RxBool isObsecurePassword = true.obs;
+  RxBool isObsecurePasswordK = true.obs;
 
   @override
   void onInit() {
@@ -29,7 +37,7 @@ class TenantController extends GetxController {
   getInit() async {
     isLoading.value = true;
     try {
-      await handleDataPegawai();
+      await handleDataTenant();
     } catch (e) {
       CustomToast.errorToast("Error", e.toString());
     } finally {
@@ -37,7 +45,7 @@ class TenantController extends GetxController {
     }
   }
 
-  handleDataPegawai() async {
+  handleDataTenant() async {
     if (GlobalData.globalKoneksi == Koneksi.online) {
       OnlineTenantService serviceOnline = OnlineTenantService();
       listTenant = await serviceOnline.getDataTenant();
@@ -152,13 +160,39 @@ class TenantController extends GetxController {
       return;
     }
 
+    if (telpC.text == '' && isAdd) {
+      errorSaveMesssage('No Telpon harus diisi.');
+      return;
+    }
+
+    if (passwordC.text == '' && isAdd) {
+      errorSaveMesssage('Password harus diisi.');
+      return;
+    }
+
+    if (passwordC.text != passwordKC.text && isAdd) {
+      errorSaveMesssage('Password dan konfirmasi password harus sama');
+      return;
+    }
+
     try {
+      LoadingScreen.show();
       if (isAdd) {
         await handleTambahPenyewa();
-        Get.back();
-        CustomToast.successToast('Success', 'Berhasil Menambah Penyewa');
+        LoadingScreen.hide();
+        CustomAlertDialog.showCloseDialog(
+          title: 'Aktivasi Email',
+          message:
+              'Email aktivasi berhasil dikirimkan di folder inbox/spam Anda.',
+          onClose: () {
+            Get.back();
+            Get.back();
+            CustomToast.successToast('Success', 'Berhasil Menambah Penyewa');
+          },
+        );
       } else {
         await handleUbahPenyewa();
+        LoadingScreen.hide();
         Get.back();
         CustomToast.successToast('Success', 'Berhasil Mengubah Penyewa');
       }
@@ -178,6 +212,8 @@ class TenantController extends GetxController {
         email: emailC.text,
         alamat: alamatC.text,
         firstname: firstnameC.text,
+        password: passwordC.text,
+        telp: telpC.text,
       );
     } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {}
   }
