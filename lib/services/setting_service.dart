@@ -1,11 +1,55 @@
 import 'dart:convert';
 
+import 'package:axata_absensi/models/Setting/setting_model.dart';
 import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/handle_exception.dart';
 import 'package:http/http.dart' as http;
 
 class SettingService {
-  Future<void> getDataSetting() async {
+  Future<List<SettingModel>> getSetting() async {
+    try {
+      var url = Uri.http('157.245.206.185', "/api/setting");
+      var response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        List data = jsonDecode(response.body)['data']['data'];
+        List<SettingModel> hasil = [];
+        for (var item in data) {
+          hasil.add(SettingModel.fromJson(item));
+        }
+        return hasil;
+      } else {
+        var status = response.statusCode;
+        throw Exception('status: $status, Gagal menghubungi server');
+      }
+    } catch (e) {
+      String errorMessage = ExceptionHandler().getErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<SettingModel> getSettingById(String id) async {
+    try {
+      var url = Uri.http('157.245.206.185', "/api/setting", {
+        'id': id,
+        'limit': '1',
+      });
+      var response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        var data = SettingModel.fromJson(jsonDecode(response.body)['data']);
+        return data;
+      } else {
+        var status = response.statusCode;
+        throw Exception('status: $status, Gagal menghubungi server');
+      }
+    } catch (e) {
+      String errorMessage = ExceptionHandler().getErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<void> getDataSettingAbsensi() async {
     try {
       var url = Uri.http(GlobalData.globalAPI, "/api/absensi", {
         'idcloud': GlobalData.idcloud,

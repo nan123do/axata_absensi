@@ -6,6 +6,7 @@ import 'package:axata_absensi/pages/lokasi/views/save_lokasi.dart';
 import 'package:axata_absensi/services/online/online_lokasi_service.dart';
 import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
+import 'package:axata_absensi/utils/maintenance_helper.dart';
 import 'package:axata_absensi/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -39,6 +40,7 @@ class LokasiController extends GetxController {
   getInit() async {
     isLoading.value = true;
     try {
+      await MaintenanceHelper.getMaintenance();
       await handleDataLokasi();
     } catch (e) {
       CustomToast.errorToast("Error", e.toString());

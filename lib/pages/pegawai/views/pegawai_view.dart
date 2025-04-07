@@ -59,41 +59,48 @@ class PegawaiView extends GetView<PegawaiController> {
                     ),
                   ),
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: controller.listPegawai.length,
-                      itemBuilder: (context, index) {
-                        final data = controller.listPegawai[index];
-                        return GestureDetector(
-                          onLongPress: () {
-                            if (GlobalData.globalKoneksi == Koneksi.online) {
+                    child: Obx(
+                      () => ListView.builder(
+                        itemCount: controller.sortPegawai.length,
+                        itemBuilder: (context, index) {
+                          final data = controller.sortPegawai[index];
+
+                          final boxDecoration = data.isDisabled == false
+                              ? AxataTheme.styleUnselectBoxFilter
+                              : AxataTheme.styleUnselectBoxFilter.copyWith(
+                                  color: Colors.grey[300],
+                                );
+
+                          return GestureDetector(
+                            onLongPress: () {
                               controller.goDialog(data);
-                            }
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 60.w,
-                              vertical: 10.h,
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 60.w,
+                                vertical: 10.h,
+                              ),
+                              margin: EdgeInsets.only(bottom: 12.h),
+                              decoration: boxDecoration,
+                              child: ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(
+                                  data.nama,
+                                  style: AxataTheme.fiveMiddle,
+                                ),
+                                subtitle: Text(
+                                  data.telp,
+                                  style: AxataTheme.threeSmall,
+                                ),
+                                trailing: Text(
+                                  data.jabatan,
+                                  style: AxataTheme.fiveMiddle,
+                                ),
+                              ),
                             ),
-                            margin: EdgeInsets.only(bottom: 12.h),
-                            decoration: AxataTheme.styleUnselectBoxFilter,
-                            child: ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              title: Text(
-                                data.nama,
-                                style: AxataTheme.fiveMiddle,
-                              ),
-                              subtitle: Text(
-                                data.telp,
-                                style: AxataTheme.threeSmall,
-                              ),
-                              trailing: Text(
-                                data.jabatan,
-                                style: AxataTheme.fiveMiddle,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ],

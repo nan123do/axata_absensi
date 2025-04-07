@@ -15,6 +15,7 @@ import 'package:axata_absensi/utils/datehelper.dart';
 import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/locationhelper.dart';
+import 'package:axata_absensi/utils/maintenance_helper.dart';
 import 'package:axata_absensi/utils/pegawai_data.dart';
 import 'package:axata_absensi/utils/theme.dart';
 import 'package:camera/camera.dart';
@@ -44,50 +45,70 @@ class CheckInController extends GetxController {
     'alamat': '',
   }.obs;
   RxMap<String, dynamic> office = <String, dynamic>{}.obs;
+  RxString strDistance = ''.obs;
+  RxString type = 'in'.obs;
 
   @override
   void onInit() {
     super.onInit();
-    isLoading.value = true;
     getInit();
 
     timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      if(!PegawaiData.isAdmin){
-
-      getDistanceToOffice();
+      if (!PegawaiData.isAdmin) {
+        getDistanceToOffice();
       }
     });
   }
 
   getInit() async {
     try {
+      isLoading.value = true;
+      await MaintenanceHelper.getMaintenance();
+
       await getCurrentLocation();
       await handleDataLokasi();
-      if (listLokasi.isEmpty) {
-        CustomToast.errorToast("Error", 'Lokasi Masih Kosong');
-        office.value = Map<String, dynamic>.from(GlobalData.office);
-      } else {
-        int index = listLokasi.indexWhere(
-          (e) =>
-              e.nama == GlobalData.lokasi['nama'] &&
-              e.id == GlobalData.lokasi['id'],
-        );
-        if (index == -1) {
-          var loc = listLokasi[0];
-          lokasi.value = {
-            'id': loc.id,
-            'nama': loc.nama,
-            'alamat': loc.alamat,
-          };
-          office.value = Map<String, dynamic>.from({
-            'latitude': double.parse(loc.latitude),
-            'longitude': double.parse(loc.longitude),
-            'radius': double.parse(loc.radius),
-          });
-        } else {
-          lokasi.value = GlobalData.lokasi;
+
+      final arguments = Get.arguments;
+      if (arguments != null) {
+        type.value = arguments['type'] ?? 'in';
+      }
+
+      if (GlobalData.globalKoneksi == Koneksi.online) {
+        if (listLokasi.isEmpty) {
+          if (!PegawaiData.isAdmin) {
+            CustomToast.errorToast("Error", 'Lokasi Masih Kosong');
+          }
           office.value = Map<String, dynamic>.from(GlobalData.office);
+        } else {
+          int index = listLokasi.indexWhere(
+            (e) =>
+                e.nama == GlobalData.lokasi['nama'] &&
+                e.id == GlobalData.lokasi['id'],
+          );
+          if (index == -1) {
+            var loc = listLokasi[0];
+            lokasi.value = {
+              'id': loc.id,
+              'nama': loc.nama,
+              'alamat': loc.alamat,
+            };
+            office.value = Map<String, dynamic>.from({
+              'latitude': double.parse(loc.latitude),
+              'longitude': double.parse(loc.longitude),
+              'radius': double.parse(loc.radius),
+            });
+          } else {
+            lokasi.value = GlobalData.lokasi;
+            office.value = Map<String, dynamic>.from(GlobalData.office);
+          }
         }
+      } else {
+        lokasi.value = {
+          'id': '',
+          'nama': GlobalData.namatoko,
+          'alamat': GlobalData.alamattoko,
+        };
+        office.value = Map<String, dynamic>.from(GlobalData.office);
       }
     } catch (e) {
       CustomToast.errorToast("Error", e.toString());
@@ -171,6 +192,10 @@ class CheckInController extends GetxController {
     Map<String, dynamic> positionDetermine = await determinePosition();
 
     if (!positionDetermine["error"]) {
+      if (office['latitude'] == null) {
+        return 'Diluar Area';
+      }
+
       Position position = positionDetermine["position"];
       double distance = Geolocator.distanceBetween(
         office['latitude'],
@@ -178,6 +203,8 @@ class CheckInController extends GetxController {
         position.latitude,
         position.longitude,
       );
+
+      strDistance.value = AxataTheme.currency.format(distance);
 
       if (distance <= GlobalData.office['radius']) {
         result = "Didalam Area";
@@ -253,7 +280,8 @@ class CheckInController extends GetxController {
 
   Future<void> goFaceSmiling() async {
     if (await LocationHelper.isUsingMockLocation() &&
-        PegawaiData.isNotNando()) {
+        PegawaiData.isNotNando() &&
+        !GlobalData.isTestMode) {
       CustomToast.errorToast(
         "Opsi Pengembang Aktif",
         "Nonaktifkan opsi pengembang dan coba lagi",
@@ -265,8 +293,20 @@ class CheckInController extends GetxController {
     await getDistanceToOffice();
     await goToCurrentPosition();
 
+    final arguments = Get.arguments;
+    String type = '';
+    if (arguments != null) {
+      type = arguments['type'] ?? 'in';
+    }
+
     if (officeDistance.value == 'Didalam Area') {
-      Get.toNamed(Routes.SMILEFACE);
+      if (type == 'out') {
+        final HomeController homeC = Get.find();
+        homeC.checkOut();
+        Get.offAllNamed(Routes.HOME);
+      } else {
+        Get.toNamed(Routes.SMILEFACE);
+      }
     } else {
       if (GlobalData.isTestMode) {
         Get.toNamed(Routes.SMILEFACE);

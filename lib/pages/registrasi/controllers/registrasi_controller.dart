@@ -6,6 +6,7 @@ import 'package:axata_absensi/pages/registrasi/views/registrasi_detail.dart';
 import 'package:axata_absensi/services/online/online_registrasi_service.dart';
 import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
+import 'package:axata_absensi/utils/maintenance_helper.dart';
 import 'package:axata_absensi/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,6 +30,7 @@ class RegistrasiController extends GetxController {
   getInit() async {
     isLoading.value = true;
     try {
+      await MaintenanceHelper.getMaintenance();
       await handleDataPegawai();
     } catch (e) {
       CustomToast.errorToast("Error", e.toString());
@@ -147,10 +149,19 @@ class RegistrasiController extends GetxController {
       await handleApiKonfirmasi(data, status);
       LoadingScreen.hide();
       Get.back();
-      CustomToast.successToast(
-        'Success',
-        'Berhasil Mengirim Permintaan ke Admin',
-      );
+      if (status == '1') {
+        await CustomToast.successToastWithDur(
+          'Success',
+          'Berhasil Menyetujui Registrasi',
+          2,
+        );
+      } else {
+        await CustomToast.successToastWithDur(
+          'Success',
+          'Berhasil Menolak Registrasi',
+          2,
+        );
+      }
       getInit();
     } catch (e) {
       LoadingScreen.hide();

@@ -1,5 +1,6 @@
 import 'package:axata_absensi/components/small_loading.dart';
 import 'package:axata_absensi/pages/checkin/controllers/checkin_controller.dart';
+import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -47,7 +48,7 @@ class CheckInView extends GetView<CheckInController> {
                         controller.createRadiusPolygon(
                           LatLng(controller.office['latitude'],
                               controller.office['longitude']),
-                          controller.office['radius'],
+                          controller.office['radius'].toDouble(),
                         ),
                       },
                     ),
@@ -62,9 +63,11 @@ class CheckInView extends GetView<CheckInController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Lokasi Absen Masuk',
-                          style: AxataTheme.twoBold,
+                        Obx(
+                          () => Text(
+                            'Lokasi Absen ${controller.type.value == 'in' ? 'Masuk' : 'Keluar'}',
+                            style: AxataTheme.twoBold,
+                          ),
                         ),
                         SizedBox(height: 15.h),
                         Row(
@@ -85,15 +88,26 @@ class CheckInView extends GetView<CheckInController> {
                               ),
                             ),
                             SizedBox(
-                              width: 40.w,
+                              width: 20.w,
                             ),
-                            Obx(() => controller.isLoadingDistance.value
-                                ? SizedBox(
-                                    width: 35.h,
-                                    height: 35.h,
-                                    child: const CircularProgressIndicator(),
-                                  )
-                                : Container()),
+                            Obx(
+                              () => controller.isLoadingDistance.value
+                                  ? SizedBox(
+                                      width: 35.h,
+                                      height: 35.h,
+                                      child: const CircularProgressIndicator(),
+                                    )
+                                  : Container(),
+                            ),
+                            SizedBox(
+                              width: 10.w,
+                            ),
+                            Text(
+                              'Jarak : ${controller.strDistance.value} m',
+                              style: AxataTheme.sixSmall.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                         SizedBox(height: 15.h),
@@ -133,18 +147,21 @@ class CheckInView extends GetView<CheckInController> {
                                 ),
                               ),
                             ),
-                            GestureDetector(
-                              onTap: () => controller.goPilihLokasi(),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 20.w,
-                                  vertical: 20.h,
-                                ),
-                                decoration: AxataTheme.styleGradientUD,
-                                child: Text(
-                                  'Ubah Lokasi',
-                                  style: AxataTheme.fourSmall.copyWith(
-                                    color: AxataTheme.white,
+                            Visibility(
+                              visible: GlobalData.isKoneksiOnline(),
+                              child: GestureDetector(
+                                onTap: () => controller.goPilihLokasi(),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 20.w,
+                                    vertical: 20.h,
+                                  ),
+                                  decoration: AxataTheme.styleGradientUD,
+                                  child: Text(
+                                    'Ubah Lokasi',
+                                    style: AxataTheme.fourSmall.copyWith(
+                                      color: AxataTheme.white,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -185,7 +202,7 @@ class CheckInView extends GetView<CheckInController> {
                               ),
                               decoration: AxataTheme.styleGradientUD,
                               child: Text(
-                                'Absen Masuk',
+                                'Absen ${controller.type.value == 'in' ? 'Masuk' : 'Keluar'}',
                                 style: AxataTheme.fiveMiddle.copyWith(
                                   color: AxataTheme.white,
                                 ),

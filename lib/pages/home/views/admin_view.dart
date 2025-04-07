@@ -97,11 +97,14 @@ class AdminHomePage extends StatelessWidget {
                           color: AxataTheme.grey,
                           onTap: () => Get.toNamed(Routes.SETTING),
                         ),
-                        ListMenuAdmin(
-                          title: 'Lokasi',
-                          icon: FontAwesomeIcons.mapPin,
-                          color: AxataTheme.mainColor,
-                          onTap: () => Get.toNamed(Routes.LOKASI),
+                        Visibility(
+                          visible: GlobalData.isKoneksiOnline(),
+                          child: ListMenuAdmin(
+                            title: 'Lokasi',
+                            icon: FontAwesomeIcons.mapPin,
+                            color: AxataTheme.mainColor,
+                            onTap: () => Get.toNamed(Routes.LOKASI),
+                          ),
                         ),
                         ListMenuAdmin(
                           title: '',

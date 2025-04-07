@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:axata_absensi/components/loading_screen.dart';
 import 'package:axata_absensi/services/user_service.dart';
+import 'package:axata_absensi/utils/maintenance_helper.dart';
 import 'package:http/http.dart' as http;
 import 'package:axata_absensi/components/custom_toast.dart';
 import 'package:axata_absensi/components/filter_multimap.dart';
@@ -90,6 +91,8 @@ class AbsensiController extends GetxController {
   }
 
   getInit() async {
+    await MaintenanceHelper.getMaintenance();
+
     try {
       if (PegawaiData.isAdmin == false) {
         isPegawaiData();

@@ -45,7 +45,9 @@ class KoneksiHelper {
             ? GlobalData.globalLocalAPI
             : '167.71.194.195';
       case Koneksi.axatapos:
-        GlobalData.globalAPI = '157.245.206.185';
+        GlobalData.globalAPI = GlobalData.isTestMode
+            ? GlobalData.globalLocalAPI
+            : '157.245.206.185';
         GlobalData.globalWSApi = '157.245.206.185';
       default:
         GlobalData.globalAPI = '157.245.206.185';

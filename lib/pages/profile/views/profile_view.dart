@@ -41,7 +41,7 @@ class ProfileView extends GetView<ProfileController> {
               child: Column(
                 children: [
                   Text(
-                    PegawaiData.nama == '' ? 'Bukan Pegawai' : PegawaiData.nama,
+                    PegawaiData.nama == '' ? 'Admin' : PegawaiData.nama,
                     style: AxataTheme.twoBold.copyWith(color: AxataTheme.white),
                   ),
                   SizedBox(height: 50.h),

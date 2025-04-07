@@ -8,6 +8,7 @@ import 'package:axata_absensi/services/user_service.dart';
 import 'package:axata_absensi/utils/datehelper.dart';
 import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
+import 'package:axata_absensi/utils/maintenance_helper.dart';
 import 'package:axata_absensi/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,11 +24,14 @@ class PegawaiController extends GetxController {
   TextEditingController alamatC = TextEditingController();
   TextEditingController noTelpC = TextEditingController();
   RxBool isLoading = false.obs;
-  List<DataPegawaiModel> listPegawai = [];
+  RxList<DataPegawaiModel> listPegawai = RxList<DataPegawaiModel>([]);
+  RxList<DataPegawaiModel> sortPegawai = RxList<DataPegawaiModel>([]);
   Rx<DateTime> dateMasuk = DateTime.now().obs;
   RxString id = ''.obs;
 
   UserService serviceUser = UserService();
+  int jumlahPegawaiAktif = 0;
+  final args = Get.arguments;
 
   @override
   void onInit() {
@@ -38,10 +42,15 @@ class PegawaiController extends GetxController {
   getInit() async {
     isLoading.value = true;
     try {
+      await MaintenanceHelper.getMaintenance();
       await handleDataPegawai();
+      sortPegawai.value = sortingPegawai();
+      hitungPegawaiAktif();
     } catch (e) {
       CustomToast.errorToast("Error", e.toString());
+      LoadingScreen.hide();
     } finally {
+      LoadingScreen.hide();
       isLoading.value = false;
     }
   }
@@ -49,69 +58,137 @@ class PegawaiController extends GetxController {
   handleDataPegawai() async {
     if (GlobalData.globalKoneksi == Koneksi.online) {
       OnlineUserService serviceOnline = OnlineUserService();
-      listPegawai = await serviceOnline.getDataPegawai();
+      listPegawai.value = await serviceOnline.getDataPegawai();
     } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
-      listPegawai = await serviceUser.getDataPegawai(namaPegawai: '');
+      listPegawai.value = await serviceUser.getDataPegawai(namaPegawai: '');
     }
   }
 
+  void hitungPegawaiAktif() {
+    jumlahPegawaiAktif =
+        listPegawai.where((pegawai) => pegawai.isDisabled == false).length;
+  }
+
+  List<DataPegawaiModel> sortingPegawai() {
+    return List.from(listPegawai)
+      ..sort((a, b) {
+        // Jika a.statusAktif == true dan b.statusAktif == false, maka a di atas
+        if (a.isDisabled && !b.isDisabled) {
+          return 1;
+        } else if (!a.isDisabled && b.isDisabled) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+  }
+
   void goDialog(DataPegawaiModel data) {
-    Get.defaultDialog(
-      title: '',
-      titlePadding: EdgeInsets.symmetric(vertical: 25.h),
-      titleStyle: const TextStyle(fontSize: 0),
-      content: Column(
-        children: [
-          GestureDetector(
-            onTap: () {
-              Get.back();
-              goUbahPage(data);
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 30.h),
-              width: double.infinity,
-              alignment: Alignment.center,
-              child: Text(
-                'Ubah',
-                style: AxataTheme.threeSmall,
+    if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+      Get.defaultDialog(
+        title: '',
+        titlePadding: EdgeInsets.symmetric(vertical: 25.h),
+        titleStyle: const TextStyle(fontSize: 0),
+        content: Column(
+          children: [
+            GestureDetector(
+              onTap: () {
+                Get.back();
+                goSetDisablePegawai(data);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 30.h),
+                width: double.infinity,
+                alignment: Alignment.center,
+                child: Text(
+                  data.isDisabled == false ? 'Nonaktifkan' : 'Aktifkan',
+                  style: AxataTheme.threeSmall,
+                ),
               ),
             ),
-          ),
-          const Divider(),
-          GestureDetector(
-            onTap: () {
-              Get.back();
-              goUbahPasswordPage(data);
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 30.h),
-              width: double.infinity,
-              alignment: Alignment.center,
-              child: Text(
-                'Ubah Password',
-                style: AxataTheme.threeSmall,
+          ],
+        ),
+      );
+    } else {
+      Get.defaultDialog(
+        title: '',
+        titlePadding: EdgeInsets.symmetric(vertical: 25.h),
+        titleStyle: const TextStyle(fontSize: 0),
+        content: Column(
+          children: [
+            GestureDetector(
+              onTap: () {
+                Get.back();
+                goUbahPage(data);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 30.h),
+                width: double.infinity,
+                alignment: Alignment.center,
+                child: Text(
+                  'Ubah',
+                  style: AxataTheme.threeSmall,
+                ),
               ),
             ),
-          ),
-          const Divider(),
-          GestureDetector(
-            onTap: () => goHapusPage(data),
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 30.h),
-              width: double.infinity,
-              alignment: Alignment.center,
-              child: Text(
-                'Hapus',
-                style: AxataTheme.threeSmall,
+            const Divider(),
+            GestureDetector(
+              onTap: () {
+                Get.back();
+                goUbahPasswordPage(data);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 30.h),
+                width: double.infinity,
+                alignment: Alignment.center,
+                child: Text(
+                  'Ubah Password',
+                  style: AxataTheme.threeSmall,
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+            const Divider(),
+            GestureDetector(
+              onTap: () {
+                Get.back();
+                goSetDisablePegawai(data);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 30.h),
+                width: double.infinity,
+                alignment: Alignment.center,
+                child: Text(
+                  data.isDisabled == false ? 'Nonaktifkan' : 'Aktifkan',
+                  style: AxataTheme.threeSmall,
+                ),
+              ),
+            ),
+            const Divider(),
+            GestureDetector(
+              onTap: () => goHapusPage(data),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 30.h),
+                width: double.infinity,
+                alignment: Alignment.center,
+                child: Text(
+                  'Hapus',
+                  style: AxataTheme.threeSmall,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   goAddPage() {
+    if (jumlahPegawaiAktif >= GlobalData.maxPegawai) {
+      CustomToast.errorToast('Error',
+          'Jumlah pegawai aktif tidak boleh melebihi maksimal pegawai');
+      return;
+    }
+
     id.value = '';
     usernameC.text = '';
     namaC.text = '';
@@ -151,6 +228,33 @@ class PegawaiController extends GetxController {
       ),
       transition: Transition.rightToLeftWithFade,
     );
+  }
+
+  goSetDisablePegawai(DataPegawaiModel data) async {
+    // Cek pegawai aktif harus <= GlobalData.maxPegawai
+    int maxPegawai = GlobalData.maxPegawai;
+    if (GlobalData.maxPegawai == 0) {
+      maxPegawai = args['jumlahPegawai'];
+    }
+    if (jumlahPegawaiAktif >= maxPegawai && !data.isDisabled == false) {
+      CustomToast.errorToast('Error',
+          'Jumlah pegawai aktif tidak boleh melebihi maksimal pegawai');
+      return;
+    }
+
+    try {
+      LoadingScreen.show();
+      await handleSetDisablePegawai(data);
+      await handleDataPegawai();
+      sortPegawai.value = sortingPegawai();
+      hitungPegawaiAktif();
+      LoadingScreen.hide();
+      CustomToast.successToast('Success',
+          'Berhasil ${data.isDisabled == false ? 'Menonaktifkan' : 'Mengaktifkan'} Pegawai');
+    } catch (e) {
+      LoadingScreen.hide();
+      CustomToast.errorToast('Error', '$e');
+    }
   }
 
   goUbahPasswordPage(DataPegawaiModel data) {
@@ -294,6 +398,23 @@ class PegawaiController extends GetxController {
         tglMasuk: DateFormat('yyyy-MM-dd').format(dateMasuk.value),
       );
     } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {}
+  }
+
+  handleSetDisablePegawai(DataPegawaiModel data) async {
+    if (GlobalData.globalKoneksi == Koneksi.online) {
+      OnlineUserService serviceOnline = OnlineUserService();
+
+      await serviceOnline.ubahStatusNonaktifPegawai(
+        id: data.kode,
+        isDisabled: !data.isDisabled,
+      );
+    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+      UserService userS = UserService();
+      userS.ubahStatusNonaktifPegawai(
+        kodePegawai: data.kode,
+        status: !data.isDisabled,
+      );
+    }
   }
 
   handleUbahPasswordPegawai() async {

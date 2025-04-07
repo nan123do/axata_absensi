@@ -5,6 +5,35 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 class CustomAlertDialog {
+  static FaIcon typeIcon(String type) {
+    switch (type) {
+      case 'info':
+        return FaIcon(
+          FontAwesomeIcons.infoCircle,
+          color: AxataTheme.yellow,
+          size: 300.r,
+        );
+      case 'success':
+        return FaIcon(
+          FontAwesomeIcons.checkCircle,
+          color: AxataTheme.green,
+          size: 200.r,
+        );
+      case 'error':
+        return FaIcon(
+          FontAwesomeIcons.timesCircle,
+          color: AxataTheme.red,
+          size: 300.r,
+        );
+      default:
+        return FaIcon(
+          FontAwesomeIcons.infoCircle,
+          color: AxataTheme.yellow,
+          size: 300.r,
+        );
+    }
+  }
+
   static showDialogAlert({
     required String title,
     required String type,
@@ -12,35 +41,6 @@ class CustomAlertDialog {
     required void Function() onConfirm,
     required void Function() onCancel,
   }) {
-    FaIcon typeIcon() {
-      switch (type) {
-        case 'info':
-          return FaIcon(
-            FontAwesomeIcons.infoCircle,
-            color: AxataTheme.yellow,
-            size: 300.r,
-          );
-        case 'success':
-          return FaIcon(
-            FontAwesomeIcons.checkCircle,
-            color: AxataTheme.red,
-            size: 200.r,
-          );
-        case 'error':
-          return FaIcon(
-            FontAwesomeIcons.timesCircle,
-            color: AxataTheme.red,
-            size: 300.r,
-          );
-        default:
-          return FaIcon(
-            FontAwesomeIcons.infoCircle,
-            color: AxataTheme.yellow,
-            size: 300.r,
-          );
-      }
-    }
-
     Get.defaultDialog(
       title: "",
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
@@ -60,7 +60,7 @@ class CustomAlertDialog {
                   style: AxataTheme.fiveMiddle,
                 ),
                 SizedBox(height: 72.h),
-                typeIcon(),
+                typeIcon(type),
                 SizedBox(height: 72.h),
                 Text(
                   message,
@@ -117,10 +117,12 @@ class CustomAlertDialog {
     );
   }
 
-  static showInactiveAccountDialog({
+  static dialogTwoButton({
     required String title,
     required String message,
-    required void Function() onResendEmail,
+    String? textBack,
+    String? textContinue,
+    required void Function() onContinue,
     required void Function() onCancel,
   }) {
     Get.defaultDialog(
@@ -169,7 +171,7 @@ class CustomAlertDialog {
                       decoration: AxataTheme.styleRedGradientUD,
                       alignment: Alignment.center,
                       child: Text(
-                        "Tidak",
+                        textBack ?? "Tidak",
                         style: AxataTheme.fiveMiddle.copyWith(
                           color: AxataTheme.white,
                         ),
@@ -181,13 +183,13 @@ class CustomAlertDialog {
                 Expanded(
                   flex: 6,
                   child: GestureDetector(
-                    onTap: onResendEmail, // Fungsi untuk resend email
+                    onTap: onContinue,
                     child: Container(
                       padding: EdgeInsets.symmetric(vertical: 24.h),
                       decoration: AxataTheme.styleGradientUD,
                       alignment: Alignment.center,
                       child: Text(
-                        "Resend Email",
+                        textContinue ?? "Resend Email",
                         style: AxataTheme.fiveMiddle.copyWith(
                           color: AxataTheme.white,
                         ),
@@ -207,9 +209,11 @@ class CustomAlertDialog {
     required String title,
     required String message,
     required void Function() onClose,
+    String? type,
+    String? textButton,
+    int? autoCloseDurationInSeconds,
   }) {
     Get.defaultDialog(
-      barrierDismissible: false,
       title: "",
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
       radius: 8,
@@ -228,15 +232,11 @@ class CustomAlertDialog {
                   style: AxataTheme.fiveMiddle,
                 ),
                 SizedBox(height: 72.h),
-                FaIcon(
-                  FontAwesomeIcons.exclamationCircle,
-                  color: AxataTheme.yellow,
-                  size: 300.r,
-                ),
+                typeIcon(type ?? ''),
                 SizedBox(height: 72.h),
                 Text(
                   message,
-                  style: AxataTheme.fiveMiddle,
+                  style: AxataTheme.threeSmall,
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -251,7 +251,7 @@ class CustomAlertDialog {
                 decoration: AxataTheme.styleGradientUD,
                 alignment: Alignment.center,
                 child: Text(
-                  "Oke",
+                  textButton ?? "Oke",
                   style: AxataTheme.fiveMiddle.copyWith(
                     color: AxataTheme.white,
                   ),
@@ -262,5 +262,13 @@ class CustomAlertDialog {
         ],
       ),
     );
+
+    if (autoCloseDurationInSeconds != null) {
+      Future.delayed(Duration(seconds: autoCloseDurationInSeconds), () {
+        if (Get.isDialogOpen == true) {
+          onClose();
+        }
+      });
+    }
   }
 }

@@ -13,6 +13,7 @@ class DataPegawaiModel {
   late String telp;
   late String jabatan;
   late String keterangan;
+  late bool isDisabled;
 
   DataPegawaiModel({
     required this.kode,
@@ -27,6 +28,7 @@ class DataPegawaiModel {
     required this.telp,
     required this.jabatan,
     required this.keterangan,
+    required this.isDisabled,
   });
 
   DataPegawaiModel.fromJson(Map<String, dynamic> json) {
@@ -39,6 +41,11 @@ class DataPegawaiModel {
     telp = json['telp'];
     jabatan = json['jabatan'];
     keterangan = json['keterangan'];
+    if (json['statusDisable'] == null) {
+      isDisabled == false;
+    } else {
+      isDisabled = json['statusDisable'] == '1' ? true : false;
+    }
   }
 
   DataPegawaiModel.fromOnlineJson(Map<String, dynamic> json) {
@@ -57,6 +64,7 @@ class DataPegawaiModel {
     telp = userprofile['telp'] ?? '';
     jabatan = userprofile['jabatan'] ?? '';
     keterangan = '';
+    isDisabled = userprofile['is_disabled'] ?? false;
   }
 
   Map<String, dynamic> toJson() {
@@ -73,6 +81,7 @@ class DataPegawaiModel {
       'telp': telp,
       'jabatan': jabatan,
       'keterangan': keterangan,
+      'is_disabled': isDisabled,
     };
   }
 }

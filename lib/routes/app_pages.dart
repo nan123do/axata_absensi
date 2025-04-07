@@ -14,6 +14,8 @@ import 'package:axata_absensi/pages/lokasi/bindings/lokasi_binding.dart';
 import 'package:axata_absensi/pages/lokasi/views/lokasi_view.dart';
 import 'package:axata_absensi/pages/lupapassword/bindings/lupapassword_binding.dart';
 import 'package:axata_absensi/pages/lupapassword/views/lupapassword_view.dart';
+import 'package:axata_absensi/pages/paket/bindings/paket_binding.dart';
+import 'package:axata_absensi/pages/paket/views/paket_view.dart';
 import 'package:axata_absensi/pages/pegawai/bindings/pegawai_binding.dart';
 import 'package:axata_absensi/pages/pegawai/views/pegawai_view.dart';
 import 'package:axata_absensi/pages/profile/bindings/profile_binding.dart';
@@ -37,6 +39,7 @@ import 'package:axata_absensi/pages/test/views/test_view.dart';
 import 'package:axata_absensi/pages/welcome/bindings/welcome_binding.dart';
 import 'package:axata_absensi/pages/welcome/views/welcome_view.dart';
 import 'package:get/get.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 part 'app_routes.dart';
 
@@ -58,13 +61,19 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.TEST,
-      page: () => TestView(),
+      page: () => ShowCaseWidget(
+        onStart: (index, key) {},
+        onComplete: (index, key) {},
+        blurValue: 1,
+        autoPlayDelay: const Duration(seconds: 3),
+        builder: (context) => TestView(),
+      ),
       binding: TestBinding(),
       transition: Transition.fadeIn,
     ),
     GetPage(
       name: _Paths.LOGIN,
-      page: () => LoginView(),
+      page: () => ShowCaseWidget(builder: (context) => LoginView()),
       binding: LoginBinding(),
       transition: Transition.fadeIn,
       transitionDuration: Duration(milliseconds: 500),
@@ -148,6 +157,12 @@ class AppPages {
       name: _Paths.TENANT,
       page: () => TenantView(),
       binding: TenantBinding(),
+      transition: Transition.rightToLeftWithFade,
+    ),
+    GetPage(
+      name: _Paths.PAKET,
+      page: () => PaketView(),
+      binding: PaketBinding(),
       transition: Transition.rightToLeftWithFade,
     ),
     GetPage(

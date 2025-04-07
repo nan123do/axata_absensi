@@ -53,7 +53,7 @@ class DetailRegistrasiView extends StatelessWidget {
                           style: AxataTheme.threeSmall,
                         ),
                         Text(
-                          DateFormat('dd MMMM yyyy', 'id_ID').format(
+                          DateFormat('dd MMMM yyyy HH:mm', 'id_ID').format(
                             data.createdAt,
                           ),
                           style: AxataTheme.threeSmall,
@@ -78,48 +78,51 @@ class DetailRegistrasiView extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 72.h),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () =>
-                                    controller.handleKonfirmasi(data, '0'),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 30.h,
-                                  ),
-                                  alignment: Alignment.center,
-                                  decoration: AxataTheme.styleRedGradientUD,
-                                  child: Text(
-                                    'Tolak',
-                                    style: AxataTheme.fiveMiddle.copyWith(
-                                      color: AxataTheme.white,
+                        Visibility(
+                          visible: data.status == '2',
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      controller.handleKonfirmasi(data, '0'),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 30.h,
+                                    ),
+                                    alignment: Alignment.center,
+                                    decoration: AxataTheme.styleRedGradientUD,
+                                    child: Text(
+                                      'Tolak',
+                                      style: AxataTheme.fiveMiddle.copyWith(
+                                        color: AxataTheme.white,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            SizedBox(width: 60.w),
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () =>
-                                    controller.handleKonfirmasi(data, '1'),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 30.h,
-                                  ),
-                                  alignment: Alignment.center,
-                                  decoration: AxataTheme.styleGradientUD,
-                                  child: Text(
-                                    'Setujui',
-                                    style: AxataTheme.fiveMiddle.copyWith(
-                                      color: AxataTheme.white,
+                              SizedBox(width: 60.w),
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      controller.handleKonfirmasi(data, '1'),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 30.h,
+                                    ),
+                                    alignment: Alignment.center,
+                                    decoration: AxataTheme.styleGradientUD,
+                                    child: Text(
+                                      'Setujui',
+                                      style: AxataTheme.fiveMiddle.copyWith(
+                                        color: AxataTheme.white,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),

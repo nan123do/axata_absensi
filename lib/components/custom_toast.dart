@@ -91,4 +91,48 @@ class CustomToast {
       snackPosition: SnackPosition.TOP,
     );
   }
+
+  static successToastWithDur(String? title, String? message, int duration) {
+    Get.rawSnackbar(
+      duration: Duration(seconds: duration),
+      dismissDirection: DismissDirection.horizontal,
+      messageText: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          FaIcon(
+            FontAwesomeIcons.checkCircle,
+            color: AxataTheme.white,
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(bottom: 4),
+                  child: Text(
+                    title ?? "success".tr,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'poppins',
+                    ),
+                  ),
+                ),
+                Text(
+                  message ?? "message_success".tr,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: AxataTheme.green,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      borderRadius: 8,
+      snackPosition: SnackPosition.TOP,
+    );
+  }
 }

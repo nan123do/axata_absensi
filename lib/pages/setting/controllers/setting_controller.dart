@@ -1,19 +1,28 @@
+import 'package:axata_absensi/components/custom_dialog.dart';
 import 'package:axata_absensi/components/custom_toast.dart';
 import 'package:axata_absensi/components/loading_screen.dart';
 import 'package:axata_absensi/models/Paket/paket_model.dart';
 import 'package:axata_absensi/models/Pegawai/datapegawai_model.dart';
 import 'package:axata_absensi/models/Registrasi/registrasi_model.dart';
+import 'package:axata_absensi/models/Setting/cloud_setting_model.dart';
+import 'package:axata_absensi/models/Setting/setting_model.dart';
 import 'package:axata_absensi/pages/checkin/controllers/checkin_controller.dart';
 import 'package:axata_absensi/pages/setting/views/paket_pembayaran.dart';
 import 'package:axata_absensi/pages/setting/views/pembayaran_view.dart';
+import 'package:axata_absensi/pages/setting/views/riwayat_pembayaran.dart';
 import 'package:axata_absensi/routes/app_pages.dart';
+import 'package:axata_absensi/services/cloud_setting_service.dart';
 import 'package:axata_absensi/services/online/online_paket_service.dart';
 import 'package:axata_absensi/services/online/online_registrasi_service.dart';
 import 'package:axata_absensi/services/online/online_setting_service.dart';
 import 'package:axata_absensi/services/online/online_user_service.dart';
+import 'package:axata_absensi/services/paket_service.dart';
+import 'package:axata_absensi/services/registrasi_service.dart';
 import 'package:axata_absensi/services/setting_service.dart';
+import 'package:axata_absensi/services/user_service.dart';
 import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
+import 'package:axata_absensi/utils/maintenance_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -28,6 +37,7 @@ class SettingController extends GetxController {
   TextEditingController smilePercentC = TextEditingController(text: '');
   TextEditingController smileDurationC = TextEditingController(text: '');
   RxBool isLoading = false.obs;
+  RxBool checkoutInStore = false.obs;
   RxBool isFirst = true.obs;
   RxBool isPending = true.obs;
   RxString location = ''.obs;
@@ -42,6 +52,14 @@ class SettingController extends GetxController {
   List<DataPaketModel> listPaket = [];
   List<DataRegistrasiModel> listRegistrasi = [];
   XFile? selectedImage;
+  DataRegistrasiModel? lastPaket;
+  RxInt jumlahPegawaiAktif = 0.obs;
+  List<SettingModel> listSetting = [];
+
+  // Rekening
+  RxString namaBank = ''.obs;
+  RxString akunBank = ''.obs;
+  RxString noRekening = ''.obs;
 
   @override
   void onInit() {
@@ -52,6 +70,7 @@ class SettingController extends GetxController {
   getInit({String type = ''}) async {
     isLoading.value = true;
     try {
+      await MaintenanceHelper.getMaintenance();
       office.value = Map<String, dynamic>.from(GlobalData.office);
       if (type == 'location' || isFirst.value) {
         location.value = GlobalData.alamattoko;
@@ -65,6 +84,8 @@ class SettingController extends GetxController {
       // Get Count User & Data Registrasi
       await handleGetUser();
       await handleGetRegistrasi();
+      await handleGetSetting();
+      hitungPegawaiAktif();
     } catch (e) {
       CustomToast.errorToast("Error", e.toString());
     } finally {
@@ -72,11 +93,30 @@ class SettingController extends GetxController {
     }
   }
 
+  void hitungPegawaiAktif() {
+    jumlahPegawaiAktif.value =
+        listPegawai.where((pegawai) => pegawai.isDisabled == false).length;
+  }
+
+  handleGetSetting() async {
+    if (GlobalData.globalKoneksi == Koneksi.online) {
+    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+      CloudSettingService service = CloudSettingService();
+      final data = await service.getDataCloudSetting();
+      CloudSetting coInStore =
+          data.singleWhere((e) => e.settingKey == 'checkout_instore');
+      checkoutInStore.value = coInStore.settingValue == 'true' ? true : false;
+    }
+  }
+
   handleGetUser() async {
     if (GlobalData.globalKoneksi == Koneksi.online) {
       OnlineUserService serviceOnline = OnlineUserService();
       listPegawai = await serviceOnline.getDataPegawai();
-    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {}
+    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+      UserService serviceUser = UserService();
+      listPegawai = await serviceUser.getDataPegawai(namaPegawai: '');
+    }
   }
 
   handleGetRegistrasi() async {
@@ -84,14 +124,31 @@ class SettingController extends GetxController {
       OnlineRegistrasiService serviceOnline = OnlineRegistrasiService();
       listRegistrasi = await serviceOnline.getDataRegistrasi(
         idTenant: GlobalData.idPenyewa,
-        status: '2',
+        status: '',
       );
+    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+      RegistrasiService service = RegistrasiService();
+      listRegistrasi = await service.getDataRegistrasi(
+        idcloud: GlobalData.idcloud,
+      );
+    }
 
-      // Cek Pending Atau Tidak
-      if (listRegistrasi.isEmpty) {
-        isPending.value = false;
+    // Cek Pending Atau Tidak
+    if (listRegistrasi.isEmpty) {
+      isPending.value = false;
+    } else {
+      bool hasPending = listRegistrasi.any(
+        (registrasi) => registrasi.status == '2',
+      );
+      isPending.value = hasPending;
+
+      // Menentukan lastRegistrasi sebagai data pertama dengan status 1
+      int lastIndex =
+          listRegistrasi.indexWhere((registrasi) => registrasi.status == '1');
+      if (lastIndex != -1) {
+        lastPaket = listRegistrasi[lastIndex];
       }
-    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {}
+    }
   }
 
   getLocation() async {
@@ -213,11 +270,77 @@ class SettingController extends GetxController {
     }
   }
 
+  ubahAktifkanLokasiValidasiAbsenKeluar(bool value) {
+    checkoutInStore.value = value;
+    handleUpdateCloudSetting(
+      'checkout_instore',
+      value == true ? 'true' : 'false',
+    );
+  }
+
+  handleUpdateCloudSetting(String settingKey, String settingValue) async {
+    try {
+      if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+        CloudSettingService service = CloudSettingService();
+        await service.updateCloudSetting(
+          settingKey: settingKey,
+          settingValue: settingValue,
+        );
+      }
+      CustomToast.successToast("Success", "Setting Berhasil Diupdate");
+    } catch (e) {
+      CustomToast.errorToast("Error", e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   handleDataPaket() async {
     if (GlobalData.globalKoneksi == Koneksi.online) {
       OnlinePaketService serviceOnline = OnlinePaketService();
       listPaket = await serviceOnline.getDataPaket();
-    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {}
+      listPaket.removeWhere(
+        (paket) => paket.harga == 0 && paket.keterangan == "default",
+      );
+    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+      PaketService service = PaketService();
+      listPaket = await service.getDataPaket();
+      listPaket.removeWhere(
+        (paket) => paket.harga == 0 && paket.keterangan == "default",
+      );
+    }
+  }
+
+  handleDataRekening() async {
+    LoadingScreen.show();
+    try {
+      listSetting = await serviceSetting.getSetting();
+      for (var i = 0; i < listSetting.length; i++) {
+        if (listSetting[i].nama.contains('namabank')) {
+          namaBank.value = listSetting[i].nilai;
+        }
+        if (listSetting[i].nama.contains('akunbank')) {
+          akunBank.value = listSetting[i].nilai;
+        }
+        if (listSetting[i].nama.contains('norekening')) {
+          noRekening.value = listSetting[i].nilai;
+          int length = noRekening.value.length;
+          if (length > 0 || length < 13) {
+            noRekening.value =
+                '${noRekening.substring(0, 4)}-${noRekening.substring(4, 8)}-${noRekening.substring(8)}';
+          } else {
+            noRekening.value =
+                '${noRekening.substring(0, 4)}-${noRekening.substring(4, 8)}-${noRekening.substring(8, 12)}-${noRekening.substring(12)}';
+          }
+        }
+      }
+      LoadingScreen.hide();
+    } catch (e) {
+      LoadingScreen.hide();
+      CustomToast.errorToast("Error", e.toString());
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   goPaketLangganan() async {
@@ -229,7 +352,7 @@ class SettingController extends GetxController {
       LoadingScreen.hide();
       CustomToast.errorToast("Error", e.toString());
     } finally {
-      isLoading.value = false;
+      LoadingScreen.hide();
     }
 
     Get.to(
@@ -237,13 +360,66 @@ class SettingController extends GetxController {
     );
   }
 
-  goPembayaranPage(DataPaketModel data) async {
+  goRiwayatTransaksi() async {
     Get.to(
-      () => PembayaranView(
-        controller: this,
-        paket: data,
-      ),
+      () => RiwayatPembayaranView(controller: this),
     );
+  }
+
+  goPembayaranPage(DataPaketModel data) async {
+    await handleDataRekening();
+    if (lastPaket != null) {
+      if (jumlahPegawaiAktif > data.jumlahPegawai) {
+        CustomAlertDialog.showCloseDialog(
+          title: "Perhatian !",
+          message:
+              "Anda akan downgrade ke ${data.nama} (Maksimum ${data.jumlahPegawai} pegawai)\n\nSaat ini, Anda memiliki ${jumlahPegawaiAktif.value} pegawai aktif yang melebihi batas dari paket yang Anda pilih.\n\nUntuk melanjutkan, Anda perlu menonaktifkan ${jumlahPegawaiAktif.value - data.jumlahPegawai} pegawai agar sesuai dengan batas maksimal pegawai pada ${data.nama}",
+          textButton: 'Nonaktifkan Data Pegawai',
+          onClose: () async {
+            Get.back();
+            await Get.toNamed(Routes.PEGAWAI);
+            getInit();
+          },
+        );
+        return;
+      }
+
+      if (lastPaket!.paket.id.toString() != data.id) {
+        CustomAlertDialog.dialogTwoButton(
+          title: "KONFIRMASI PERUBAHAN PAKET",
+          message:
+              "Paket sebelumnya akan hilang dan digantikan dengan paket baru.",
+          textContinue: 'Lanjut',
+          textBack: 'Batal',
+          onContinue: () {
+            Get.back();
+            Get.to(
+              () => PembayaranView(
+                controller: this,
+                paket: data,
+              ),
+            );
+          },
+          onCancel: () {
+            Get.back();
+          },
+        );
+      } else {
+        Get.to(
+          () => PembayaranView(
+            controller: this,
+            paket: data,
+          ),
+        );
+      }
+    } else {
+      Get.to(
+        () => PembayaranView(
+          controller: this,
+          paket: data,
+        ),
+      );
+    }
   }
 
   // Fungsi untuk memilih gambar dari kamera atau galeri
@@ -297,17 +473,26 @@ class SettingController extends GetxController {
   }
 
   Future<void> handleKirimLangganan(DataPaketModel data) async {
+    if (selectedImage == null) {
+      CustomToast.errorToast('Error', 'Bukti masih kosong');
+      return;
+    }
+
     try {
+      isLoading(true);
       LoadingScreen.show();
       await handleApiKirimLangganan(data);
       LoadingScreen.hide();
-      CustomToast.successToast(
+      await CustomToast.successToast(
         'Success',
         'Berhasil Mengirim Permintaan ke Admin',
       );
+      await Future.delayed(const Duration(seconds: 1));
+      isLoading(false);
       Get.offAllNamed(Routes.HOME);
     } catch (e) {
       LoadingScreen.hide();
+      isLoading(false);
       CustomToast.errorToast('Error', '$e');
     }
   }
@@ -322,6 +507,14 @@ class SettingController extends GetxController {
         totalHarga: data.harga.toString(),
         file: selectedImage,
       );
-    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {}
+    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+      RegistrasiService service = RegistrasiService();
+      await service.simpanRegistrasi(
+        idpaket: data.id.toString(),
+        jumlahPegawai: data.jumlahPegawai.toString(),
+        totalHarga: data.harga.toString(),
+        file: selectedImage,
+      );
+    }
   }
 }

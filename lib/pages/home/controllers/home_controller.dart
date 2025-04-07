@@ -3,10 +3,14 @@ import 'dart:async';
 import 'package:axata_absensi/components/custom_dialog.dart';
 import 'package:axata_absensi/components/custom_toast.dart';
 import 'package:axata_absensi/models/Absensi/dataabsen_model.dart';
+import 'package:axata_absensi/models/DataCloud/datacloud_model.dart';
+import 'package:axata_absensi/models/Setting/cloud_setting_model.dart';
 import 'package:axata_absensi/models/Shift/datashift_model.dart';
 import 'package:axata_absensi/pages/home/views/selectshift.dart';
 import 'package:axata_absensi/routes/app_pages.dart';
 import 'package:axata_absensi/services/absensi_service.dart';
+import 'package:axata_absensi/services/cloud_setting_service.dart';
+import 'package:axata_absensi/services/datacloud_service.dart';
 import 'package:axata_absensi/services/helper_service.dart';
 import 'package:axata_absensi/services/online/online_absensi_service.dart';
 import 'package:axata_absensi/services/online/online_shift_service.dart';
@@ -15,6 +19,7 @@ import 'package:axata_absensi/utils/datehelper.dart';
 import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/locationhelper.dart';
+import 'package:axata_absensi/utils/maintenance_helper.dart';
 import 'package:axata_absensi/utils/pegawai_data.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -24,6 +29,7 @@ import 'package:intl/intl.dart';
 class HomeController extends GetxController {
   RxBool isLoading = false.obs;
   RxBool isLoadingCheckIn = false.obs;
+  RxBool checkoutInStore = false.obs;
   RxString telat = '0'.obs;
   RxString hariMasuk = '0'.obs;
 
@@ -57,11 +63,15 @@ class HomeController extends GetxController {
   RxBool isEmptySelectedShift = true.obs;
 
   @override
-  void onInit() {
+  Future<void> onInit() async {
     super.onInit();
+    await MaintenanceHelper.getMaintenance();
 
     if (PegawaiData.isSuperUser == false) {
       getInit();
+    } else {
+      CustomToast.errorToast('Error', 'User tidak ditemukan');
+      Get.offAllNamed(Routes.LOGIN);
     }
   }
 
@@ -74,6 +84,8 @@ class HomeController extends GetxController {
     isLoading.value = true;
     // Get Data Absensi
     try {
+      await handleDataCloud();
+
       // Mendapatkan tanggal awal bulan ini
       DateTime firstDayOfMonth = DateTime(dateFrom.year, dateFrom.month, 1);
 
@@ -118,6 +130,8 @@ class HomeController extends GetxController {
         getAbsenHariIni();
         handleAbsensiTerakhir();
       }
+
+      await handleGetSetting();
     } catch (e) {
       CustomToast.errorToast("Error", e.toString());
     } finally {
@@ -127,6 +141,18 @@ class HomeController extends GetxController {
     isLoading.value = false;
   }
 
+  handleGetSetting() async {
+    if (GlobalData.globalKoneksi == Koneksi.online) {
+    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+      CloudSettingService service = CloudSettingService();
+      final data = await service.getDataCloudSetting();
+      CloudSetting coInStore =
+          data.singleWhere((e) => e.settingKey == 'checkout_instore');
+      checkoutInStore.value = coInStore.settingValue == 'true' ? true : false;
+      GlobalData.checkoutInStore = checkoutInStore.value;
+    }
+  }
+
   handleStatusShift() async {
     if (GlobalData.globalKoneksi == Koneksi.online) {
       statusShift.value = GlobalData.statusShift ? '1' : '0';
@@ -134,6 +160,16 @@ class HomeController extends GetxController {
       String status = await serviceHelper.strSetting(kodeSetting: 'I02');
       GlobalData.statusShift = status == '1' ? true : false;
       statusShift.value = status;
+    }
+  }
+
+  handleDataCloud() async {
+    if (GlobalData.globalKoneksi == Koneksi.online) {
+    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+      DataCloudService serviceOnline = DataCloudService();
+      DataCloudModel data = await serviceOnline.getDataCloud();
+      GlobalData.maxPegawai = data.maxPegawai;
+      GlobalData.expiredAt = data.expiredAt;
     }
   }
 
@@ -318,7 +354,8 @@ class HomeController extends GetxController {
         lanjutCheckin = false;
         return;
       } else if (await LocationHelper.isUsingMockLocation() &&
-          PegawaiData.isNotNando()) {
+          PegawaiData.isNotNando() &&
+          !GlobalData.isTestMode) {
         CustomToast.errorToast("Opsi Pengembang Aktif",
             "Nonaktifkan opsi pengembang dan coba lagi");
         lanjutCheckin = false;

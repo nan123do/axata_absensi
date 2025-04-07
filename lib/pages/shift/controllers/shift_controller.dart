@@ -9,6 +9,7 @@ import 'package:axata_absensi/services/shift_service.dart';
 import 'package:axata_absensi/utils/datehelper.dart';
 import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
+import 'package:axata_absensi/utils/maintenance_helper.dart';
 import 'package:axata_absensi/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -37,6 +38,7 @@ class ShiftController extends GetxController {
   }
 
   getInit() async {
+    await MaintenanceHelper.getMaintenance();
     refreshData();
   }
 

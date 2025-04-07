@@ -60,7 +60,7 @@ class OnlineRegistrasiService {
       request.fields['idpaket'] = idpaket;
       request.fields['idtenant'] = idtenant;
       request.fields['jumlah_pegawai'] = jumlahPegawai;
-      request.fields['total_harga '] = totalHarga;
+      request.fields['total_harga'] = totalHarga;
 
       // Menambahkan file jika ada
       if (file != null) {

@@ -155,6 +155,48 @@ class OnlineUserService {
     }
   }
 
+  Future<String> ubahStatusNonaktifPegawai({
+    required String id,
+    required bool isDisabled,
+  }) async {
+    try {
+      var url = Uri.http(
+        GlobalData.globalAPI + GlobalData.globalPort,
+        "/api/auth/users/",
+      );
+
+      var response = await http.patch(
+        url,
+        body: {
+          "id": id,
+          "is_disabled": isDisabled == true ? 'True' : 'False',
+        },
+        headers: {
+          'Authorization': PegawaiData.tokenAuth,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['meta']['status'] == "success") {
+          return data['meta']['message'];
+        } else {
+          throw Exception(data['data']['message']);
+        }
+      } else {
+        Map<String, dynamic> data = jsonDecode(response.body);
+        if (data['meta']['message'] == "invalid") {
+          throw Exception(data['data']['message']);
+        } else {
+          throw Exception(data['meta']['message']);
+        }
+      }
+    } catch (e) {
+      String errorMessage = ExceptionHandler().getErrorMessage(e);
+      throw errorMessage;
+    }
+  }
+
   Future<String> hapusPegawai({
     required String id,
   }) async {

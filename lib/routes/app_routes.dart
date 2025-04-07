@@ -22,6 +22,7 @@ abstract class Routes {
   static const SETTING = _Paths.SETTING;
   static const PEGAWAI = _Paths.PEGAWAI;
   static const TENANT = _Paths.TENANT;
+  static const PAKET = _Paths.PAKET;
   static const REGISTRASI = _Paths.REGISTRASI;
 }
 
@@ -43,5 +44,6 @@ abstract class _Paths {
   static const SETTING = '/setting';
   static const PEGAWAI = '/pegawai';
   static const TENANT = '/tenant';
+  static const PAKET = '/paket';
   static const REGISTRASI = '/registrasi';
 }

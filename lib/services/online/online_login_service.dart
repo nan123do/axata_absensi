@@ -38,13 +38,21 @@ class OnlineLoginService {
 
           if (data['user']['userprofile'] != null) {
             profile = data['user']['userprofile'];
+
+            // Jika Pegawai Nonaktif Tidak Boleh Masuk
+            if (profile['is_disabled'] == true) {
+              throw Exception(
+                'Akun tidak aktif, Silahkan hubungi admin perusahaan anda',
+              );
+            }
+
             PegawaiData.tgllahir = profile['tgl_masuk'] == ''
                 ? DateTime.now()
                 : DateTime.parse(profile['tgl_masuk']);
             PegawaiData.alamat = profile['alamat'] ?? '';
             PegawaiData.telp = profile['telp'] ?? '';
             PegawaiData.norek = '';
-            PegawaiData.namajabatan = profile['namajabatan'] ?? '';
+            PegawaiData.namajabatan = profile['jabatan'] ?? '';
             PegawaiData.menuakses = '';
             PegawaiData.isAdmin = profile['role'] == '1' ? true : false;
 
@@ -55,11 +63,6 @@ class OnlineLoginService {
               GlobalData.alamattoko = tenant['alamat'] ?? GlobalData.alamattoko;
               GlobalData.gajiPermenit =
                   tenant['gaji_permenit'].toDouble() ?? 20;
-              // GlobalData.office = {
-              //   'latitude': double.parse(tenant['latitude']),
-              //   'longitude': double.parse(tenant['longitude']),
-              //   'radius': tenant['radius'],
-              // };
               GlobalData.smileDuration = tenant['smile_duration'];
               GlobalData.smilePercent = tenant['smile_percent'];
               GlobalData.statusShift =
@@ -68,8 +71,7 @@ class OnlineLoginService {
               GlobalData.maxPegawai = tenant['max_pegawai'];
               GlobalData.expiredAt = tenant['expired_at'] != null
                   ? DateHelper.convertStringToDateTime(tenant['expired_at'])
-                  : DateTime(1999, DateTime.now().month, DateTime.now().day,
-                      DateTime.now().hour, DateTime.now().minute);
+                  : null;
             }
           }
 
@@ -85,11 +87,11 @@ class OnlineLoginService {
         }
       } else {
         if (jsonDecode(response.body)['meta']['message'] == 'inactive') {
-          CustomAlertDialog.showInactiveAccountDialog(
+          CustomAlertDialog.dialogTwoButton(
             title: "AKUN BELUM AKTIF",
             message:
                 "Akun Anda belum aktif. Silakan cek di kotak masuk/spam email anda.",
-            onResendEmail: () async {
+            onContinue: () async {
               LoadingScreen.show();
               String email = jsonDecode(response.body)['data']['email'];
 

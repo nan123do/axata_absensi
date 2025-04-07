@@ -92,7 +92,7 @@ class DataAbsenModel {
     jmlMenit = jamKeluar.difference(jamMasuk).inMinutes.toDouble();
     tarif = json['tarif'] == null ? 0 : double.parse(json['tarif']);
     gajiAbsen = json['tarif'] == null ? 0 : tarif * jmlMenit;
-    keterangan = json['keterangan'];
+    keterangan = json['keterangan'] ?? '';
     kodePegawai = user['username'];
     status = json['status'].toString();
     idShift = shift['id'].toString();

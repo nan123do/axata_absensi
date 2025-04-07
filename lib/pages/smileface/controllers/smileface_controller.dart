@@ -4,6 +4,7 @@ import 'package:axata_absensi/components/custom_toast.dart';
 import 'package:axata_absensi/pages/checkin/controllers/checkin_controller.dart';
 import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/image_processor.dart';
+import 'package:axata_absensi/utils/maintenance_helper.dart';
 import 'package:camera/camera.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
@@ -55,6 +56,7 @@ class SmileFaceController extends GetxController {
 
   getInit() async {
     try {
+      await MaintenanceHelper.getMaintenance();
       final arguments = Get.arguments ?? {};
       fromFeatureTry = arguments['fromFeatureTry'] ?? false;
       smileDuration.value =

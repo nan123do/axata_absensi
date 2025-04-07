@@ -14,7 +14,7 @@ Future<void> main() async {
   await GetStorage.init();
 
   Get.put(PageIndexController(), permanent: true);
-  await Future.delayed(const Duration(milliseconds: 300));
+  await Future.delayed(const Duration(seconds: 1));
 
   runApp(const MyApp());
 }

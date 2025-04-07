@@ -4,6 +4,7 @@ import 'package:axata_absensi/pages/absensi/views/container_input.dart';
 import 'package:axata_absensi/routes/app_pages.dart';
 import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/koneksi_helper.dart';
+import 'package:axata_absensi/utils/maintenance_helper.dart';
 import 'package:axata_absensi/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,8 +29,9 @@ class IdCloudController extends GetxController {
     getInit();
   }
 
-  getInit() {
+  getInit() async {
     try {
+      await MaintenanceHelper.getMaintenance();
       final box = GetStorage();
       final rawData = box.read('listidcloud') ?? [];
       final List<Map<String, dynamic>> convertedData =

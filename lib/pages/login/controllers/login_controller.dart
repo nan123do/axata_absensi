@@ -1,8 +1,14 @@
 import 'package:axata_absensi/components/custom_toast.dart';
+import 'package:axata_absensi/models/DataCloud/datacloud_model.dart';
+import 'package:axata_absensi/models/Registrasi/registrasi_model.dart';
+import 'package:axata_absensi/pages/login/controllers/login_paket_controller.dart';
+import 'package:axata_absensi/services/datacloud_service.dart';
 import 'package:axata_absensi/services/helper_service.dart';
 import 'package:axata_absensi/services/login_service.dart';
 import 'package:axata_absensi/routes/app_pages.dart';
 import 'package:axata_absensi/services/online/online_login_service.dart';
+import 'package:axata_absensi/services/online/online_registrasi_service.dart';
+import 'package:axata_absensi/services/registrasi_service.dart';
 import 'package:axata_absensi/services/setting_service.dart';
 import 'package:axata_absensi/utils/connectivity_checker.dart';
 import 'package:axata_absensi/utils/enums.dart';
@@ -31,6 +37,7 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
     isLoading.value = true;
     getInit();
   }
@@ -80,6 +87,62 @@ class LoginController extends GetxController {
     return formattedId;
   }
 
+  handleDataCloud() async {
+    if (GlobalData.globalKoneksi == Koneksi.online) {
+    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+      DataCloudService serviceOnline = DataCloudService();
+      DataCloudModel data = await serviceOnline.getDataCloud();
+      GlobalData.maxPegawai = data.maxPegawai;
+      GlobalData.expiredAt = data.expiredAt;
+    }
+  }
+
+  Future<bool> handleGetRegistrasi() async {
+    List<DataRegistrasiModel> listRegistrasi = [];
+    if (GlobalData.globalKoneksi == Koneksi.online) {
+      OnlineRegistrasiService serviceOnline = OnlineRegistrasiService();
+      listRegistrasi = await serviceOnline.getDataRegistrasi(
+        idTenant: GlobalData.idPenyewa,
+        status: '',
+      );
+    } else if (GlobalData.globalKoneksi == Koneksi.axatapos) {
+      RegistrasiService service = RegistrasiService();
+      listRegistrasi = await service.getDataRegistrasi(
+        idcloud: GlobalData.idcloud,
+      );
+    }
+
+    return listRegistrasi.isNotEmpty;
+  }
+
+  handleExpiredTenant() async {
+    if (PegawaiData.isSuperUser) {
+      return CustomToast.errorToast('Error', 'User tidak ditemukan');
+    }
+
+    await handleDataCloud();
+    if (GlobalData.expiredAt == null) {
+      if (PegawaiData.isAdmin) {
+        LoginPaketController controller = LoginPaketController();
+        if (await handleGetRegistrasi()) {
+          Get.offAllNamed(Routes.HOME);
+        } else {
+          controller.goPaketLangganan();
+        }
+      } else {
+        CustomToast.errorToast('Error', 'Masa aktif perusahaan telah habis.');
+      }
+    } else {
+      if (PegawaiData.isAdmin == false) {
+        if (GlobalData.expiredAt!.isBefore(DateTime.now())) {
+          CustomToast.errorToast('Error', 'Masa aktif perusahaan telah habis.');
+          return;
+        }
+      }
+      Get.offAllNamed(Routes.HOME);
+    }
+  }
+
   Future<void> login() async {
     if (await ConnectivityChecker.checkConnection()) {
       if (usernameC.text.isNotEmpty && passC.text.isNotEmpty) {
@@ -96,9 +159,9 @@ class LoginController extends GetxController {
           bool hasil = await handleLogin(GlobalData.globalKoneksi);
           if (hasil) {
             if (PegawaiData.statusAktif) {
-              Get.offAllNamed(Routes.HOME);
+              handleExpiredTenant();
             } else {
-              CustomToast.errorToast('Error', 'Tot');
+              CustomToast.errorToast('Error', 'Pegawai Belum Aktif');
             }
           }
         } catch (e) {
@@ -129,7 +192,7 @@ class LoginController extends GetxController {
           String kodeSetting = serviceHelper.getKodeSetting('GajiPermenit');
           GlobalData.gajiPermenit =
               await serviceHelper.doubleSetting(kodeSetting: kodeSetting);
-          await settingHelper.getDataSetting();
+          await settingHelper.getDataSettingAbsensi();
         }
         return hasil;
       default:

@@ -5,6 +5,7 @@ import 'package:axata_absensi/routes/app_pages.dart';
 import 'package:axata_absensi/services/online/online_tenant_service.dart';
 import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
+import 'package:axata_absensi/utils/maintenance_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -29,7 +30,8 @@ class RegisterController extends GetxController {
     getInit();
   }
 
-  getInit() {
+  getInit() async {
+    await MaintenanceHelper.getMaintenance();
     isLoading.value = false;
   }
 

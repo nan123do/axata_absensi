@@ -5,6 +5,7 @@ import 'package:axata_absensi/routes/app_pages.dart';
 import 'package:axata_absensi/services/online/online_user_service.dart';
 import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
+import 'package:axata_absensi/utils/maintenance_helper.dart';
 import 'package:axata_absensi/utils/pegawai_data.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -28,7 +29,8 @@ class ProfileController extends GetxController {
     getInit();
   }
 
-  getInit() {
+  getInit() async {
+    await MaintenanceHelper.getMaintenance();
     saveCredential.value = GlobalData.saveCredential;
     isLoading.value = false;
   }

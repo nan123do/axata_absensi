@@ -6,6 +6,7 @@ import 'package:axata_absensi/pages/tenant/views/save_tenant.dart';
 import 'package:axata_absensi/services/online/online_tenant_service.dart';
 import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
+import 'package:axata_absensi/utils/maintenance_helper.dart';
 import 'package:axata_absensi/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -37,6 +38,7 @@ class TenantController extends GetxController {
   getInit() async {
     isLoading.value = true;
     try {
+      await MaintenanceHelper.getMaintenance();
       await handleDataTenant();
     } catch (e) {
       CustomToast.errorToast("Error", e.toString());
@@ -78,7 +80,6 @@ class TenantController extends GetxController {
           GestureDetector(
             onTap: () async {
               await goHapusPage(data);
-              // goUbahPasswordPage(data);
             },
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 30.h),
@@ -199,6 +200,7 @@ class TenantController extends GetxController {
 
       getInit();
     } catch (e) {
+      LoadingScreen.hide();
       CustomToast.errorToast('Error', '$e');
     }
   }

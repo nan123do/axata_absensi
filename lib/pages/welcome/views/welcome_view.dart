@@ -68,7 +68,7 @@ class WelcomeView extends GetView<WelcomeController> {
                   WelcomeContainer(
                     onTap: () => controller.goLogin(Koneksi.online, 'karyawan'),
                     image: 'assets/image/welcome_karyawan.png',
-                    title: 'Masuk sebagai karyawan',
+                    title: 'Masuk sebagai pegawai',
                     subtitle:
                         'Cek kehadiran Anda, lihat riwayat absensi, dan tetap terhubung dengan perusahaan',
                   ),

@@ -135,7 +135,15 @@ class PegawaiHomepage extends StatelessWidget {
                     timeCheck: controller.doneCheckIn,
                   ),
                   CheckInOutContainer(
-                    onTap: () => controller.checkOut(),
+                    onTap: () {
+                      if (controller.checkoutInStore.value) {
+                        Get.toNamed(Routes.CHECKIN, arguments: {
+                          'type': 'out',
+                        });
+                      } else {
+                        controller.checkOut();
+                      }
+                    },
                     controller: controller,
                     isCheckIn: false,
                     timeCheck: controller.doneCheckOut,

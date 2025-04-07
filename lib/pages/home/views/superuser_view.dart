@@ -77,16 +77,16 @@ class SuperUserPage extends StatelessWidget {
                           onTap: () => Get.toNamed(Routes.TENANT),
                         ),
                         ListMenuAdmin(
+                          title: 'Paket',
+                          icon: FontAwesomeIcons.listAlt,
+                          color: AxataTheme.mainColor,
+                          onTap: () => Get.toNamed(Routes.PAKET),
+                        ),
+                        ListMenuAdmin(
                           title: 'Registrasi',
                           icon: FontAwesomeIcons.clipboardCheck,
                           color: AxataTheme.mainColor,
                           onTap: () => Get.toNamed(Routes.REGISTRASI),
-                        ),
-                        ListMenuAdmin(
-                          title: '',
-                          icon: FontAwesomeIcons.mapPin,
-                          color: AxataTheme.mainColor,
-                          onTap: () {},
                         ),
                         ListMenuAdmin(
                           title: '',

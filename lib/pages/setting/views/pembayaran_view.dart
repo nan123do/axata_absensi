@@ -81,7 +81,7 @@ class PembayaranView extends StatelessWidget {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 80.w, vertical: 20.h),
               child: Text(
-                'Nomor Rekening : 0901-0425-34\nNama Bank : BCA\nA/N : AGUNG SETYO BUDI',
+                'Nomor Rekening : ${controller.noRekening}\nNama Bank : ${controller.namaBank}\nA/N : ${controller.akunBank}',
                 style: AxataTheme.fiveMiddle,
               ),
             ),
@@ -95,8 +95,7 @@ class PembayaranView extends StatelessWidget {
             SizedBox(height: 40.h),
             Obx(
               () => Visibility(
-                visible: controller.selectedImage != null &&
-                    controller.isLoading.isFalse,
+                visible: controller.isLoading.isFalse,
                 child: controller.selectedImage != null
                     ? Center(
                         child: Container(
@@ -138,7 +137,9 @@ class PembayaranView extends StatelessWidget {
             ),
             const Spacer(),
             GestureDetector(
-              onTap: () => controller.handleKirimLangganan(paket),
+              onTap: controller.isLoading.isFalse
+                  ? () => controller.handleKirimLangganan(paket)
+                  : () {},
               child: Container(
                 padding: EdgeInsets.symmetric(
                   vertical: 30.h,

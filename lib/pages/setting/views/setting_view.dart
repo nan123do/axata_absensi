@@ -2,6 +2,7 @@ import 'package:axata_absensi/components/small_loading.dart';
 import 'package:axata_absensi/pages/profile/views/profile_view.dart';
 import 'package:axata_absensi/pages/setting/controllers/setting_controller.dart';
 import 'package:axata_absensi/pages/setting/views/location_setting.dart';
+import 'package:axata_absensi/pages/setting/views/other_setting.dart';
 import 'package:axata_absensi/pages/setting/views/smile_setting.dart';
 import 'package:axata_absensi/utils/enums.dart';
 import 'package:axata_absensi/utils/global_data.dart';
@@ -58,12 +59,49 @@ class SettingView extends GetView<SettingController> {
       } else {
         return ListMenu(
           title: 'Pending',
-          subtitle: 'Cek riwayat Pembelian',
+          subtitle: 'Cek Riwayat Pembelian',
           icon: FontAwesomeIcons.tags,
           color: AxataTheme.yellow,
-          ontap: () => controller.goPaketLangganan(),
+          ontap: () => controller.goRiwayatTransaksi(),
         );
       }
+    }
+
+    lastPaket() {
+      if (controller.lastPaket != null) {
+        return Text(
+          controller.lastPaket!.paket.nama,
+          style: AxataTheme.twoBold.copyWith(
+            color: AxataTheme.white,
+          ),
+        );
+      }
+
+      return Container();
+    }
+
+    Widget topHeader() {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 50.h),
+          lastPaket(),
+          GlobalData.expiredAt == null
+              ? Container()
+              : Text(
+                  'Berlaku sampai : ${DateFormat('dd-MM-yyyy HH:mm').format(GlobalData.expiredAt!)}',
+                  style: AxataTheme.threeSmall.copyWith(
+                    color: AxataTheme.white,
+                  ),
+                ),
+          Text(
+            'Jumlah pegawai (${controller.jumlahPegawaiAktif.value}/${GlobalData.maxPegawai})',
+            style: AxataTheme.threeSmall.copyWith(
+              color: AxataTheme.white,
+            ),
+          ),
+        ],
+      );
     }
 
     return Scaffold(
@@ -104,19 +142,7 @@ class SettingView extends GetView<SettingController> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 50.h),
-                          Text(
-                            'Berlaku sampai : ${DateFormat('dd-MM-yyyy HH:mm').format(GlobalData.expiredAt)}',
-                            style: AxataTheme.threeSmall.copyWith(
-                              color: AxataTheme.white,
-                            ),
-                          ),
-                          Text(
-                            'Jumlah pegawai (${controller.listPegawai.length}/${GlobalData.maxPegawai})',
-                            style: AxataTheme.threeSmall.copyWith(
-                              color: AxataTheme.white,
-                            ),
-                          ),
+                          topHeader(),
                           SizedBox(height: 50.h),
                           ListMenu(
                             title: 'Nama Usaha atau Toko',
@@ -153,6 +179,20 @@ class SettingView extends GetView<SettingController> {
                             color: AxataTheme.mainColor,
                             ontap: () {},
                           ),
+                          if (!GlobalData.isKoneksiOnline())
+                            ListMenu(
+                              title: '-',
+                              subtitle: 'Peraturan Lainnya',
+                              icon: FontAwesomeIcons.cogs,
+                              color: AxataTheme.mainColor,
+                              ontap: () {
+                                Get.to(
+                                  () => OtherSettingView(
+                                    controller: controller,
+                                  ),
+                                );
+                              },
+                            ),
                           handleLangganan(),
                         ],
                       ),

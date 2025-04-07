@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:axata_absensi/models/Helper/pesan_model.dart';
 import 'package:axata_absensi/models/Pegawai/datapegawai_model.dart';
 import 'package:axata_absensi/utils/global_data.dart';
 import 'package:axata_absensi/utils/handle_exception.dart';
@@ -40,6 +41,32 @@ class UserService {
     } catch (e) {
       String errorMessage = ExceptionHandler().getErrorMessage(e);
       throw errorMessage;
+    }
+  }
+
+  Future<String> ubahStatusNonaktifPegawai({
+    required String kodePegawai,
+    required bool status,
+  }) async {
+    var url = Uri.http(GlobalData.globalWSApi + GlobalData.globalPort,
+        "/api/product/simpan_ubahnonaktif_pegawai", {
+      'appId': GlobalData.idcloud,
+      'kode': kodePegawai,
+      'status': status ? '1' : '0',
+    });
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      PesanModel pesan = PesanModel.fromJson(data);
+      if (pesan.status == "success") {
+        return pesan.keterangan;
+      } else {
+        throw Exception(pesan.keterangan);
+      }
+    } else {
+      var status = response.statusCode;
+      throw Exception('status: $status, Gagal menghubungi server');
     }
   }
 }
